@@ -16,18 +16,29 @@ There's no sign-up or login. The app opens straight into the product.
 
 ## The problem
 
-US working adults aged 25–45 often pay **$400–$1,000/month** across auto, health and home insurance. Most never read past the
-first page of the declarations. Common leaks include:
+US working adults aged 25–45 juggle auto, health and home or renters insurance, and most never read past the first page of
+the declarations. The numbers:
 
-| Leak | Typical cost |
+| | Finding | Source |
+| --- | --- | --- |
+| 💸 | The average worker pays **$6,850 a year (~$570/month)** toward family health coverage through their employer, before any doctor visit. The total family premium averages $26,993. | [KFF Employer Health Benefits Survey, 2025](https://www.kff.org/health-costs/press-release/2025-employer-health-benefits-survey/) |
+| 🤷 | Only **14%** of insured Americans could correctly explain all four basics: deductible, copay, coinsurance and out-of-pocket maximum. | Loewenstein et al., *Journal of Health Economics* 32(5), 2013 ([CMU summary](https://www.cmu.edu/news/stories/archives/2013/august/aug1_understandinghealthinsurance.html)) |
+| 🙈 | **86%** say they understand their insurance, yet **56%** don't know a standard homeowners policy excludes flood, and **55%** don't know personal auto excludes business use. | [Trusted Choice / Big "I" survey, 2024](https://www.businesswire.com/news/home/20240618486693/en/Survey-Most-Americans-Do-Not-Fully-Understand-Insurance-Coverage...Yet-86-Say-They-Do) (≈400 respondents) |
+| 🔎 | **57%** of auto insurance customers shopped for a new policy in the past year, the highest in the study's 19-year history. | [J.D. Power U.S. Insurance Shopping Study, 2025](https://www.insurancejournal.com/news/national/2025/05/02/822373.htm) |
+
+So people pay a lot, don't understand what they're paying for, and are actively looking for a better deal. The usual
+answer, a broker or comparison site, is paid by commission on what it sells.
+
+### Common leaks we look for
+
+| Leak | Why it costs you |
 | --- | --- |
-| $250 collision deductible on a 10-year-old car | $300–$600/yr |
-| Roadside / ID-theft / rental add-ons bought twice | $50–$200/yr |
-| Rich PPO or Platinum plan for a household that sees a doctor twice a year | $800–$2,000/yr |
-| Missed bundle, alarm, low-mileage and defensive-driving discounts | $150–$500/yr |
+| Low collision/comprehensive deductibles on older cars | Raising the deductible from $200 to $1,000 can cut that part of the premium by **40% or more** ([Insurance Information Institute](https://www.compare.com/auto-insurance/resources/high-or-low-deductible)) |
+| Roadside, ID-theft or rental add-ons bought twice | Each duplicate typically costs ~$50–200/yr (our estimate) |
+| A rich PPO/Platinum plan for a household that rarely sees a doctor | Premiums are the biggest line item (see KFF above). A cheaper HDHP plus an employer HSA seed often wins on expected annual cost |
+| Missed bundle, alarm, low-mileage and defensive-driving discounts | Carriers rarely volunteer them; you have to ask |
 
-Brokers are paid by commission, so they have little reason to point these out. InsuraUS acts as an independent, educational
-fiduciary.
+InsuraUS acts as an independent, educational fiduciary: no commissions, and the fee is the same whatever you decide.
 
 ## Try it in 30 seconds
 

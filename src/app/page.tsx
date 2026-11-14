@@ -13,31 +13,32 @@ import {
 import Link from "next/link";
 import { DemoPresets } from "@/components/landing/DemoPresets";
 import { HeroXray } from "@/components/landing/HeroXray";
+import { DEDUCTIBLE_FACT, STATS } from "@/lib/stats";
 
 const LEAKS = [
   {
     Icon: CarFront,
     title: "Tiny deductibles on old cars",
-    body: "A $250 collision deductible on a car worth $7,000 can cost $300–$600 a year for almost no real protection.",
-    range: "$300–600/yr",
+    body: "A $250 collision deductible on a car worth $7,000 means paying extra every month for very little real protection.",
+    proof: { text: "Up to 40%+ off collision & comprehensive with a $1,000 deductible", source: "Insurance Information Institute", url: DEDUCTIBLE_FACT.url },
   },
   {
     Icon: CopyX,
     title: "Coverage you bought twice",
     body: "Roadside help on two policies, identity-theft add-ons on both auto and home, rental cover you'll never use.",
-    range: "$50–200/yr",
+    proof: { text: "Est. $50–200 a year per duplicate add-on", source: "InsuraUS estimate" },
   },
   {
     Icon: HeartPulse,
     title: "The wrong health plan",
     body: "Paying for a rich PPO when your family sees a doctor twice a year — while a cheaper HSA plan sits unused.",
-    range: "$800–2,000/yr",
+    proof: { text: "Workers already pay $6,850 a year for family coverage", source: "KFF 2025", url: STATS[0].url },
   },
   {
     Icon: BadgeDollarSign,
     title: "Discounts nobody applied",
     body: "Bundling, alarm credits, low-mileage and defensive-driving discounts your carrier won't volunteer.",
-    range: "$150–500/yr",
+    proof: { text: "57% of drivers shopped for a better rate last year", source: "J.D. Power 2025", url: STATS[3].url },
   },
 ];
 
@@ -99,7 +100,7 @@ export default function LandingPage() {
             </div>
             <dl className="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-white/10 pt-8">
               {[
-                ["$400–1k", "monthly insurance bill for a typical US family"],
+                ["$570/mo", "paid by workers for family health coverage alone (KFF 2025)"],
                 ["~30 sec", "to audit up to 6 policy PDFs"],
                 ["0 files", "stored — PDFs stay in memory"],
               ].map(([n, l]) => (
@@ -136,6 +137,31 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* PROBLEM — sourced numbers */}
+      <section id="the-problem" className="relative scroll-mt-16 overflow-hidden bg-night">
+        <div className="absolute inset-0 bg-grid opacity-50" />
+        <div className="relative mx-auto max-w-7xl px-4 py-24 sm:px-6">
+          <div className="max-w-2xl">
+            <p className="text-sm font-bold tracking-widest text-scan uppercase">The problem, by the numbers</p>
+            <h2 className="mt-3 text-4xl font-extrabold text-white sm:text-5xl">Expensive, confusing, and rarely checked</h2>
+          </div>
+          <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            {STATS.map((s) => (
+              <figure key={s.id} className="flex flex-col rounded-2xl border border-white/10 bg-white/[0.04] p-6">
+                <p className="money text-5xl font-extrabold text-scan">{s.value}</p>
+                <blockquote className="mt-3 flex-1 text-base leading-relaxed text-slate-200">{s.label}</blockquote>
+                <figcaption className="mt-5 border-t border-white/10 pt-3 text-sm text-slate-400">
+                  <a href={s.url} target="_blank" rel="noopener noreferrer" className="underline decoration-slate-600 underline-offset-2 hover:text-white">
+                    {s.source}
+                  </a>
+                  {s.caveat && <span className="mt-1 block text-slate-500">{s.caveat}</span>}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* LEAKS */}
       <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
         <div className="max-w-2xl">
@@ -146,14 +172,28 @@ export default function LandingPage() {
           </p>
         </div>
         <div className="mt-12 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {LEAKS.map(({ Icon, title, body, range }) => (
+          {LEAKS.map(({ Icon, title, body, proof }) => (
             <div key={title} className="group flex flex-col rounded-2xl border border-line bg-surface p-7 shadow-card transition hover:-translate-y-1 hover:shadow-lift">
               <span className="flex size-12 items-center justify-center rounded-xl bg-risk-soft text-risk-strong transition group-hover:bg-risk group-hover:text-white">
                 <Icon className="size-6" />
               </span>
               <h3 className="mt-5 text-xl font-bold text-ink">{title}</h3>
               <p className="mt-2 flex-1 text-base text-muted">{body}</p>
-              <p className="money mt-5 text-lg font-extrabold text-savings-strong">{range}</p>
+              <div className="mt-5 border-t border-line pt-4">
+                <p className="money text-base leading-snug font-bold text-savings-strong">{proof.text}</p>
+                {"url" in proof && proof.url ? (
+                  <a
+                    href={proof.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-1 inline-block text-sm text-muted underline decoration-line-strong underline-offset-2 hover:text-ink"
+                  >
+                    Source: {proof.source}
+                  </a>
+                ) : (
+                  <p className="mt-1 text-sm text-muted">{proof.source}</p>
+                )}
+              </div>
             </div>
           ))}
         </div>
