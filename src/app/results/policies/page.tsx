@@ -25,8 +25,8 @@ export default function PoliciesPage() {
     <>
       <ResultsSectionTitle
         eyebrow="Policy audit"
-        title="Line by line, in plain English"
-        description="Open a policy to see every coverage translated from insurance-speak, with red, amber and green flags on what to change."
+        title="Your policies, decoded"
+        description="What each coverage really means, and what to change. Tap a policy to open it."
       />
       <div className="mb-6 flex flex-wrap gap-2" role="group" aria-label="Filter policies">
         {FILTERS.map((f) => {

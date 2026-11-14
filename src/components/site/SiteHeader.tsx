@@ -21,6 +21,7 @@ export function SiteHeader() {
 
   const links = [
     { href: "/", label: "Overview" },
+    { href: "/#how-it-works", label: "How it works" },
     { href: "/audit", label: "Start audit" },
     ...(result ? [{ href: "/results", label: "My results" }] : []),
     { href: "/samples", label: "Samples" },

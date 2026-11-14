@@ -114,6 +114,28 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* HOW IT WORKS */}
+      <section id="how-it-works" className="scroll-mt-16 border-y border-line bg-surface">
+        <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
+          <div className="max-w-2xl">
+            <p className="text-sm font-bold tracking-widest text-savings-strong uppercase">How it works</p>
+            <h2 className="mt-3 text-4xl font-extrabold text-ink sm:text-5xl">From PDF to savings in four steps</h2>
+          </div>
+          <ol className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+            {STEPS.map(({ Icon, title, body }, i) => (
+              <li key={title} className="relative">
+                <span className="money text-6xl font-extrabold text-line">0{i + 1}</span>
+                <span className="mt-3 flex size-12 items-center justify-center rounded-xl bg-night text-scan">
+                  <Icon className="size-6" />
+                </span>
+                <h3 className="mt-4 text-xl font-bold text-ink">{title}</h3>
+                <p className="mt-2 text-base text-muted">{body}</p>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
       {/* LEAKS */}
       <section className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
         <div className="max-w-2xl">
@@ -134,28 +156,6 @@ export default function LandingPage() {
               <p className="money mt-5 text-lg font-extrabold text-savings-strong">{range}</p>
             </div>
           ))}
-        </div>
-      </section>
-
-      {/* HOW IT WORKS */}
-      <section id="how-it-works" className="scroll-mt-16 border-y border-line bg-surface">
-        <div className="mx-auto max-w-7xl px-4 py-24 sm:px-6">
-          <div className="max-w-2xl">
-            <p className="text-sm font-bold tracking-widest text-savings-strong uppercase">How it works</p>
-            <h2 className="mt-3 text-4xl font-extrabold text-ink sm:text-5xl">From PDF to savings in four steps</h2>
-          </div>
-          <ol className="mt-12 grid gap-8 md:grid-cols-2 lg:grid-cols-4">
-            {STEPS.map(({ Icon, title, body }, i) => (
-              <li key={title} className="relative">
-                <span className="money text-6xl font-extrabold text-line">0{i + 1}</span>
-                <span className="mt-3 flex size-12 items-center justify-center rounded-xl bg-night text-scan">
-                  <Icon className="size-6" />
-                </span>
-                <h3 className="mt-4 text-xl font-bold text-ink">{title}</h3>
-                <p className="mt-2 text-base text-muted">{body}</p>
-              </li>
-            ))}
-          </ol>
         </div>
       </section>
 
