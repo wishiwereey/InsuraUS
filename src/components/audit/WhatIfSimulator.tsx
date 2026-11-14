@@ -5,7 +5,7 @@ import { useMemo, useState } from "react";
 import { Bar, BarChart, CartesianGrid, LabelList, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import type { PolicyType, WhatIfScenario } from "@/types/insurance";
 import { Card } from "@/components/ui/card";
-import { cn, formatCompactUSD, formatUSD } from "@/lib/utils";
+import { cn, formatCompactUSD, formatUSD, shortTitle } from "@/lib/utils";
 
 // Validated with the dataviz palette checker (CVD-safe pair); amber gets value labels + a numbers table for contrast relief.
 const PREMIUM_COLOR = "#4F6BD8";
@@ -20,8 +20,6 @@ const TONES: Record<string, { soft: string; solid: string; activeCard: string; h
   other: { soft: "bg-slate-100 text-slate-600", solid: "bg-slate-700 text-white", activeCard: "border-slate-400 bg-slate-50", hoverBorder: "hover:border-slate-300" },
 };
 
-/** "Minor Auto Collision (Ford F-150) - $3,000" → "Minor Auto Collision (Ford F-150)" (the amount is shown below). */
-const shortTitle = (t: string) => t.replace(/\s*(?:[-–—:]\s*\$[\d,.]+[^)]*|\(\s*\$[\d,.]+[^)]*\))\s*$/, "").trim() || t;
 
 const ICONS: Partial<Record<PolicyType, typeof Car>> = {
   auto: Car,

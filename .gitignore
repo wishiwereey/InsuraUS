@@ -10,3 +10,6 @@ next-env.d.ts
 sample-pdfs/
 *.zip
 *.bundle
+# Test artifacts: keep the readable report + JUnit XML, ignore bulky HTML coverage
+test-results/coverage/
+test-results/results.json

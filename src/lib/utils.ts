@@ -19,3 +19,6 @@ export const formatCompactUSD = (n: number) =>
 
 export const formatBytes = (b: number) =>
   b < 1024 * 1024 ? `${Math.max(1, Math.round(b / 1024))} KB` : `${(b / 1024 / 1024).toFixed(1)} MB`;
+
+/** "Minor Auto Collision (Ford F-150) - $3,000" → "Minor Auto Collision (Ford F-150)" (the amount is shown below). */
+export const shortTitle = (t: string) => t.replace(/\s*(?:[-–—:]\s*\$[\d,.]+[^)]*|\(\s*\$[\d,.]+[^)]*\))\s*$/, "").trim() || t;

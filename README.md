@@ -191,6 +191,30 @@ Open http://localhost:3000.
 Import the repo, add `GEMINI_API_KEY` under Project → Settings → Environment Variables, and deploy. `/api/analyze` sets
 `maxDuration = 120`. On the Hobby plan Vercel caps this at 60 s, which is usually enough for `gemini-2.5-flash`.
 
+## Testing
+
+```bash
+npm test              # run the suite once
+npm run test:report   # tests + coverage → test-results/TEST_RESULTS.md and junit.xml
+```
+
+There are 68 tests (Vitest), with **~95% statement coverage** of `src/lib` and `src/app/api`. The latest run is in
+[`test-results/TEST_RESULTS.md`](test-results/TEST_RESULTS.md). The tests need no Gemini key:
+
+| Suite | What it proves |
+| --- | --- |
+| `tests/normalize.test.ts` | The model's math is never trusted: totals and statuses are recomputed, savings and protection upgrades are kept separate, out-of-pocket is capped, the verdict is trimmed to one sentence |
+| `tests/billing.test.ts` | Plan cookies are HMAC-signed: a tampered or foreign-signed cookie can't grant Pro or reset the trial, and expired subscriptions downgrade |
+| `tests/request.test.ts` | Uploads are checked by magic bytes, plus count and size limits; household context is whitelisted |
+| `tests/api.test.ts` | Real route handlers: the free-trial file and audit limits, the Copilot question limit, sample PDFs always free, the checkout → status → cancel lifecycle |
+| `tests/gemini.test.ts` | Gemini is replaced by a fake client to test the success path, the retry in JSON mode when the schema is rejected (400), the backup model when the model is not found (404), and the error messages |
+| `tests/lib.test.ts` | Future-value math, formatting, and deterministic sample PDFs whose presets add up to the advertised spend |
+
+To check that the suite catches real bugs, we deliberately reintroduced the old "net savings" bug and skipped the cookie
+signature check. Both were caught.
+
+CI (`.github/workflows/ci.yml`) runs the type check, the tests with the report, and a production build on every push.
+
 ## Troubleshooting
 
 | Error | Fix |
