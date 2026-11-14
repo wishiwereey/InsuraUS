@@ -159,11 +159,11 @@ test-results/               отчёт последнего прогона
 Нужен Node.js 20 или новее.
 
 ```bash
-git clone https://github.com/wishiwereey/InsuraUS.git
+git clone https://github.com/wishiwereey/insura-us.git
 ```
 
 ```bash
-cd InsuraUS
+cd insura-us
 ```
 
 ```bash
