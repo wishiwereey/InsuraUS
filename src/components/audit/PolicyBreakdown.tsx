@@ -74,7 +74,7 @@ function PolicyCard({ policy, defaultOpen }: { policy: AnalyzedPolicy; defaultOp
           </span>
           <div className="min-w-0">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="text-sm font-semibold text-ink">{type.label}</span>
+              <span className="text-base font-bold text-ink">{type.label}</span>
               <Badge tone={status.tone}>
                 <status.Icon /> {status.label}
               </Badge>
@@ -84,14 +84,14 @@ function PolicyCard({ policy, defaultOpen }: { policy: AnalyzedPolicy; defaultOp
                 </span>
               )}
             </div>
-            <p className="mt-0.5 truncate text-sm text-ink-soft">
+            <p className="mt-0.5 text-sm break-words text-ink-soft">
               {policy.carrier} <span className="text-subtle">·</span> <span className="money">#{policy.policyNumber}</span>
             </p>
-            {policy.insuredItem && <p className="truncate text-xs text-muted">{policy.insuredItem}</p>}
+            {policy.insuredItem && <p className="text-sm break-words text-muted">{policy.insuredItem}</p>}
           </div>
         </div>
 
-        <div className="flex items-center justify-between gap-6 sm:justify-end">
+        <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 sm:shrink-0 sm:flex-nowrap sm:justify-end">
           <div className="text-right">
             <p className="text-xs font-medium uppercase tracking-wide text-muted">Annual premium</p>
             <p className="money flex items-center justify-end gap-1.5 text-sm">
@@ -123,44 +123,44 @@ function PolicyCard({ policy, defaultOpen }: { policy: AnalyzedPolicy; defaultOp
       {open && (
         <div id={panelId} className="animate-fade-up border-t border-line">
           {policy.plainEnglishSummary && (
-            <p className="border-b border-line bg-canvas/60 px-5 py-3 text-sm text-ink-soft">{policy.plainEnglishSummary}</p>
+            <p className="border-b border-line bg-canvas/60 px-5 py-3 text-base break-words text-ink-soft sm:px-6">{policy.plainEnglishSummary}</p>
           )}
-          <div className="grid gap-0 lg:grid-cols-2">
+          <div className="grid gap-0 lg:grid-cols-2 [&>*]:min-w-0">
             {/* Jargon Translator */}
-            <section className="border-line p-5 lg:border-r">
+            <section className="min-w-0 border-line p-5 sm:p-6 lg:border-r">
               <h4 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted">
                 <Languages className="size-3.5" /> Jargon translator
               </h4>
               <dl className="divide-y divide-line">
                 {policy.coverageLines.map((line) => (
-                  <div key={line.term + line.value} className="py-2.5">
-                    <div className="flex items-baseline justify-between gap-3">
-                      <dt className="text-sm font-medium text-ink">{line.term}</dt>
-                      <dd className="money shrink-0 text-right text-sm font-semibold text-ink">
-                        {line.value}
-                        {line.annualPremium ? (
-                          <span className="ml-2 text-xs font-normal text-muted">{formatUSD(line.annualPremium)}/yr</span>
-                        ) : null}
-                      </dd>
+                  <div key={line.term + line.value} className="min-w-0 py-3">
+                    <div className="flex items-start justify-between gap-3">
+                      <dt className="min-w-0 flex-1 text-base font-bold break-words text-ink">{line.term}</dt>
+                      {line.annualPremium ? (
+                        <span className="money shrink-0 rounded-full bg-canvas px-2.5 py-0.5 text-sm font-semibold text-ink-soft">
+                          {formatUSD(line.annualPremium)}/yr
+                        </span>
+                      ) : null}
                     </div>
-                    <dd className="mt-0.5 text-xs leading-relaxed text-muted">{line.plainEnglish}</dd>
+                    <dd className="money mt-1 text-base font-semibold break-words text-info">{line.value}</dd>
+                    <dd className="mt-1 text-sm leading-relaxed break-words text-muted">{line.plainEnglish}</dd>
                   </div>
                 ))}
               </dl>
-              <div className="mt-3 grid grid-cols-2 gap-3 rounded-lg bg-canvas p-3 text-xs">
+              <div className="mt-4 grid gap-3 rounded-xl bg-canvas p-4 text-sm sm:grid-cols-2">
                 <div>
                   <p className="text-muted">Deductible</p>
-                  <p className="money font-semibold text-ink">{policy.deductible}</p>
+                  <p className="money font-semibold break-words text-ink">{policy.deductible}</p>
                 </div>
                 <div>
                   <p className="text-muted">Coverage limit</p>
-                  <p className="money font-semibold text-ink">{policy.coverageLimit}</p>
+                  <p className="money font-semibold break-words text-ink">{policy.coverageLimit}</p>
                 </div>
               </div>
             </section>
 
             {/* Findings */}
-            <section className="border-t border-line p-5 lg:border-t-0">
+            <section className="min-w-0 border-t border-line p-5 sm:p-6 lg:border-t-0">
               <h4 className="mb-3 flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-muted">
                 <ShieldAlert className="size-3.5" /> Optimization flags
               </h4>
@@ -173,14 +173,14 @@ function PolicyCard({ policy, defaultOpen }: { policy: AnalyzedPolicy; defaultOp
                   {policy.issues.map((issue) => (
                     <li
                       key={issue.title}
-                      className={cn("rounded-lg border border-l-4 border-line bg-surface p-4", SEVERITY_BORDER[issue.severity])}
+                      className={cn("min-w-0 rounded-xl border border-l-4 border-line bg-surface p-4", SEVERITY_BORDER[issue.severity])}
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <div>
+                        <div className="min-w-0">
                           <p className="text-xs font-semibold uppercase tracking-wide text-muted">
                             {CATEGORY_LABEL[issue.category] ?? issue.category} · {issue.severity} impact
                           </p>
-                          <p className="mt-0.5 text-sm font-semibold text-ink">{issue.title}</p>
+                          <p className="mt-0.5 text-base font-bold break-words text-ink">{issue.title}</p>
                         </div>
                         <span
                           className={cn(
@@ -191,10 +191,10 @@ function PolicyCard({ policy, defaultOpen }: { policy: AnalyzedPolicy; defaultOp
                           {formatSignedUSD(issue.annualSavings)}/yr
                         </span>
                       </div>
-                      <p className="mt-2 text-sm leading-relaxed text-ink-soft">{issue.explanation}</p>
-                      <p className="mt-3 flex items-start gap-2 rounded-md bg-canvas px-3 py-2 text-xs font-medium text-ink">
-                        <ArrowRight className="mt-0.5 size-3.5 shrink-0 text-savings" />
-                        {issue.actionItem}
+                      <p className="mt-2 text-sm leading-relaxed break-words text-ink-soft">{issue.explanation}</p>
+                      <p className="mt-3 flex items-start gap-2 rounded-lg bg-canvas px-3 py-2.5 text-sm font-medium text-ink">
+                        <ArrowRight className="mt-1 size-4 shrink-0 text-savings" />
+                        <span className="min-w-0 break-words">{issue.actionItem}</span>
                       </p>
                     </li>
                   ))}

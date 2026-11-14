@@ -153,7 +153,7 @@ export function PolicyChat({ files, context, audit }: PolicyChatProps) {
           <div key={i} className={cn("flex", m.role === "user" ? "justify-end" : "justify-start")}>
             <div
               className={cn(
-                "max-w-[88%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed",
+                "max-w-[88%] min-w-0 rounded-2xl px-4 py-2.5 text-base leading-relaxed break-words",
                 m.role === "user" ? "rounded-br-md bg-ink text-white" : "rounded-bl-md border border-line bg-canvas text-ink-soft",
               )}
             >
