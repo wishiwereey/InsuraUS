@@ -117,7 +117,7 @@ export function WhatIfSimulator({ scenarios }: { scenarios: WhatIfScenario[] }) 
                 </span>
                 <span className="min-w-0 flex-1">
                   <span className="line-clamp-2 text-base leading-snug font-bold text-ink">{title}</span>
-                  <span className="money mt-0.5 block text-sm font-semibold text-muted">{formatUSD(sc.eventCost)} event</span>
+                  <span className="money mt-0.5 block text-sm font-semibold text-muted">Costs {formatUSD(sc.eventCost)} before insurance</span>
                 </span>
               </button>
             );
