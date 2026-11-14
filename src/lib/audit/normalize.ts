@@ -103,6 +103,7 @@ export function normalizeAudit(raw: Partial<AuditResult>): AuditResult {
   const policies = (raw.policies ?? []).map(normalizePolicy);
   const currentTotal = policies.reduce((s, p) => s + p.currentAnnualPremium, 0);
   const optimizedTotal = policies.reduce((s, p) => s + p.optimizedAnnualPremium, 0);
+  const allIssues = policies.flatMap((p) => p.issues);
 
   const scoreFactors = (raw.scoreFactors ?? []).slice(0, 4).map((f) => ({
     label: text(f.label, "Factor"),
@@ -120,7 +121,10 @@ export function normalizeAudit(raw: Partial<AuditResult>): AuditResult {
     insuranceHealthScore: score,
     scoreFactors,
     totalCurrentAnnualSpend: policies.length ? currentTotal : nonNeg(raw.totalCurrentAnnualSpend),
-    totalPotentialAnnualSavings: policies.length ? currentTotal - optimizedTotal : money(raw.totalPotentialAnnualSavings),
+    totalPotentialAnnualSavings: policies.length
+      ? allIssues.reduce((sum, i) => sum + Math.max(0, i.annualSavings), 0)
+      : Math.max(0, money(raw.totalPotentialAnnualSavings)),
+    totalRecommendedUpgrades: allIssues.reduce((sum, i) => sum + Math.max(0, -i.annualSavings), 0),
     summaryVerdict: conciseVerdict(text(raw.summaryVerdict, "Analysis complete.")),
     policies,
     whatIfScenarios: (raw.whatIfScenarios ?? []).slice(0, 3).map((s) => normalizeScenario(s, currentTotal, optimizedTotal)),

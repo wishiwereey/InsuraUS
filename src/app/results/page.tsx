@@ -16,7 +16,11 @@ export default function OverviewPage() {
   const { audit } = result;
 
   const bySavings = audit.policies
-    .map((p) => ({ ...p, savings: p.currentAnnualPremium - p.optimizedAnnualPremium }))
+    .map((p) => ({
+      ...p,
+      savings: p.issues.reduce((sum, i) => sum + Math.max(0, i.annualSavings), 0),
+      upgrades: p.issues.reduce((sum, i) => sum + Math.max(0, -i.annualSavings), 0),
+    }))
     .sort((a, b) => b.savings - a.savings);
   const maxSavings = Math.max(1, ...bySavings.map((p) => Math.abs(p.savings)));
 
@@ -35,7 +39,7 @@ export default function OverviewPage() {
         {/* Savings by policy */}
         <section className="rounded-3xl border border-line bg-surface p-6 shadow-card sm:p-8">
           <h2 className="text-2xl font-extrabold text-ink">Where the money is</h2>
-          <p className="mt-1 text-base text-muted">Yearly savings available on each policy</p>
+          <p className="mt-1 text-base text-muted">Yearly savings on each policy · protection upgrades shown separately</p>
           <ul className="mt-6 space-y-5">
             {bySavings.map((p, i) => {
               const Icon = ICON[p.type] ?? FileText;
@@ -54,15 +58,15 @@ export default function OverviewPage() {
                         </span>
                       </span>
                     </span>
-                    <span className={`money shrink-0 text-lg font-extrabold ${p.savings >= 0 ? "text-savings-strong" : "text-warn-strong"}`}>
-                      {p.savings >= 0 ? formatUSD(p.savings) : `+${formatUSD(-p.savings)}`}
+                    <span className="shrink-0 text-right">
+                      <span className="money block text-lg font-extrabold text-savings-strong">{formatUSD(p.savings)}</span>
+                      {p.upgrades > 0 && (
+                        <span className="money block text-sm font-semibold text-warn-strong">+{formatUSD(p.upgrades)} protection</span>
+                      )}
                     </span>
                   </div>
                   <div className="mt-2.5 h-3 overflow-hidden rounded-full bg-canvas">
-                    <div
-                      className={`h-full rounded-full ${p.savings >= 0 ? "bg-savings" : "bg-warn"}`}
-                      style={{ width: `${Math.max(pct, p.savings === 0 ? 0 : 3)}%` }}
-                    />
+                    <div className="h-full rounded-full bg-savings" style={{ width: `${Math.max(pct, p.savings === 0 ? 0 : 3)}%` }} />
                   </div>
                 </li>
               );

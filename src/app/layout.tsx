@@ -45,6 +45,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Link href="/results" className="hover:text-ink">My results</Link>
                 <Link href="/pricing" className="hover:text-ink">Pricing</Link>
                 <Link href="/account" className="hover:text-ink">Account</Link>
+                <Link href="/terms" className="hover:text-ink">Terms & cancellation</Link>
                 <Link href="/#how-it-works" className="hover:text-ink">How it works</Link>
               </nav>
             </div>

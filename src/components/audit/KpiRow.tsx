@@ -25,6 +25,7 @@ function GrowthBars({ annual }: { annual: number }) {
 
 export function KpiRow({ audit }: { audit: AuditResult }) {
   const savings = Math.max(0, audit.totalPotentialAnnualSavings);
+  const upgrades = audit.totalRecommendedUpgrades ?? 0;
   const pct = audit.totalCurrentAnnualSpend > 0 ? Math.round((savings / audit.totalCurrentAnnualSpend) * 100) : 0;
   const fiveYear = futureValueOfAnnualSavings(savings, 5, 0.07);
 
@@ -52,7 +53,15 @@ export function KpiRow({ audit }: { audit: AuditResult }) {
         <p className="money mt-4 text-4xl font-extrabold text-savings-strong">{formatUSD(savings)}</p>
         <p className="money mt-1 text-base text-savings-strong/90">per year · {pct}% of your bill</p>
         <p className="money mt-auto pt-6 text-sm text-ink-soft">
-          <span className="font-bold">{formatUSD(savings / 12)}</span> back every month
+          {upgrades > 0 ? (
+            <>
+              Recommended protection upgrades: <span className="font-bold text-warn-strong">+{formatUSD(upgrades)}/yr</span>
+            </>
+          ) : (
+            <>
+              <span className="font-bold">{formatUSD(savings / 12)}</span> back every month
+            </>
+          )}
         </p>
       </Card>
 

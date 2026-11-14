@@ -159,7 +159,7 @@ export const auditResponseSchema: Schema = {
     },
     insuranceHealthScore: { type: Type.INTEGER, description: "0–100 overall score; roughly the average of scoreFactors." },
     totalCurrentAnnualSpend: num("Sum of currentAnnualPremium across policies."),
-    totalPotentialAnnualSavings: num("Sum of positive issue annualSavings net of any recommended extra spend."),
+    totalPotentialAnnualSavings: num("Sum of POSITIVE issue annualSavings only; do not subtract recommended extra spend."),
     summaryVerdict: str("ONE sentence, max 20 words, whole dollars: the single most valuable action and what it saves."),
     negotiationScript: {
       type: Type.OBJECT,

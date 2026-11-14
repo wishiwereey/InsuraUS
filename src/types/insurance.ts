@@ -123,7 +123,10 @@ export interface AuditResult {
   insuranceHealthScore: number;
   scoreFactors: ScoreFactor[];
   totalCurrentAnnualSpend: number;
+  /** Gross yearly savings: sum of every positive issue saving. */
   totalPotentialAnnualSavings: number;
+  /** Yearly cost of recommended protection upgrades (e.g. higher liability limits). Shown separately, never netted out. */
+  totalRecommendedUpgrades: number;
   summaryVerdict: string;
   policies: AnalyzedPolicy[];
   whatIfScenarios: WhatIfScenario[];

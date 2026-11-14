@@ -140,6 +140,10 @@ export default function AccountPage() {
         Prototype billing: no accounts, no real payments. Plan state is stored in signed browser cookies.{" "}
         <Link href="/pricing" className="font-semibold text-ink underline-offset-4 hover:underline">
           See pricing
+        </Link>{" "}
+        ·{" "}
+        <Link href="/terms" className="font-semibold text-ink underline-offset-4 hover:underline">
+          Terms & cancellation policy
         </Link>
       </p>
     </div>

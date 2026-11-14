@@ -1,3 +1,4 @@
+import { termsForPrompt } from "@/lib/product-info";
 import type { AuditResult, UserContext } from "@/types/insurance";
 
 export const AUDITOR_SYSTEM_PROMPT = `You are InsuraUS, an expert US consumer insurance auditor. You act as an independent, educational fiduciary: you are NOT a broker, you earn no commission, and your only goal is that the household pays a fair price for the protection it actually needs.
@@ -36,7 +37,7 @@ STATE NUANCE
 
 ## Math rules (strict)
 - optimizedAnnualPremium = currentAnnualPremium − sum(that policy's issue annualSavings).
-- totalCurrentAnnualSpend = sum of currentAnnualPremium. totalPotentialAnnualSavings = sum of all issue annualSavings.
+- totalCurrentAnnualSpend = sum of currentAnnualPremium. totalPotentialAnnualSavings = sum of POSITIVE issue annualSavings (recommended extra spend is reported separately, never subtracted).
 - What-if scenarios: create EXACTLY 3 realistic events tailored to the actual policies (prefer one per major policy type: e.g. auto collision repair, an ER visit/hospital stay, home water damage). Use realistic 2025–2026 US costs for the household's state. Compute out-of-pocket precisely from the printed deductibles, copays, coinsurance and out-of-pocket maximums — current plan vs. the optimized recommendations. If you recommend dropping collision on a car and the scenario damages that car, the optimized out-of-pocket is the full repair cost (capped at ACV) — show the trade-off honestly.
 - Include at least one scenario where the optimized plan costs MORE out-of-pocket than the current plan, so the user sees the real trade-off — and explain in the verdict whether they still come out ahead for the year once premium savings are included.
 
@@ -99,7 +100,13 @@ Rules:
 - If the documents don't say, state that clearly and tell the user exactly what to ask their carrier.
 - For "what if" questions, show the math in a short, readable form (premium change, out-of-pocket change, net effect).
 - Be concise: 2–6 short paragraphs or a short bulleted list. Use **bold** for key numbers. No headings.
-- You are not a licensed agent; for binding coverage decisions, recommend confirming with the carrier in writing — but still give a direct, useful answer.`;
+- You are not a licensed agent; for binding coverage decisions, recommend confirming with the carrier in writing — but still give a direct, useful answer.
+- Reply in the language the user writes in.
+
+Questions about InsuraUS itself (plans, price, cancelling, refunds, privacy, how the app works) are NOT about the insurance documents: answer them directly from the InsuraUS policy below, and point to the Account page for cancelling and the Terms page (/terms) for details. Never tell the user to contact "InsuraUS support" for something answered here.
+
+INSURAUS POLICY
+${termsForPrompt()}`;
 
 export function auditDigest(audit: AuditResult | undefined): string {
   if (!audit) return "No audit available.";

@@ -135,7 +135,13 @@ export default function CheckoutPage() {
             {processing ? <Loader2 className="size-5 animate-spin" /> : <Lock className="size-5" />}
             {processing ? "Processing…" : `Pay $${PRO_PRICE_USD}.00 (test)`}
           </button>
-          <p className="mt-3 text-center text-sm text-muted">Your card number never leaves this page in test mode.</p>
+          <p className="mt-3 text-center text-sm text-muted">
+            Renews monthly at ${PRO_PRICE_USD} until you cancel in Account. By subscribing you agree to the{" "}
+            <Link href="/terms" className="font-semibold text-ink underline underline-offset-2">
+              Terms & subscription policy
+            </Link>
+            . Your card number never leaves this page in test mode.
+          </p>
         </form>
 
         <aside className="h-fit rounded-3xl bg-night p-6 text-white sm:p-8">

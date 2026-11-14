@@ -11,6 +11,18 @@ import { cn, formatCompactUSD, formatUSD } from "@/lib/utils";
 const PREMIUM_COLOR = "#4F6BD8";
 const OOP_COLOR = "#E08A0B";
 
+/** Per-policy-type color for the scenario cards (status colors stay reserved for good/bad). */
+const TONES: Record<string, { soft: string; solid: string; activeCard: string; hoverBorder: string }> = {
+  auto: { soft: "bg-info-soft text-info", solid: "bg-info text-white", activeCard: "border-info bg-info-soft", hoverBorder: "hover:border-info/50" },
+  health: { soft: "bg-rose-50 text-rose-600", solid: "bg-rose-500 text-white", activeCard: "border-rose-400 bg-rose-50", hoverBorder: "hover:border-rose-300" },
+  home: { soft: "bg-amber-50 text-amber-700", solid: "bg-amber-500 text-white", activeCard: "border-amber-400 bg-amber-50", hoverBorder: "hover:border-amber-300" },
+  renters: { soft: "bg-violet-50 text-violet-600", solid: "bg-violet-500 text-white", activeCard: "border-violet-400 bg-violet-50", hoverBorder: "hover:border-violet-300" },
+  other: { soft: "bg-slate-100 text-slate-600", solid: "bg-slate-700 text-white", activeCard: "border-slate-400 bg-slate-50", hoverBorder: "hover:border-slate-300" },
+};
+
+/** "Minor Auto Collision (Ford F-150) - $3,000" → "Minor Auto Collision (Ford F-150)" (the amount is shown below). */
+const shortTitle = (t: string) => t.replace(/\s*(?:[-–—:]\s*\$[\d,.]+[^)]*|\(\s*\$[\d,.]+[^)]*\))\s*$/, "").trim() || t;
+
 const ICONS: Partial<Record<PolicyType, typeof Car>> = {
   auto: Car,
   health: HeartPulse,
@@ -72,37 +84,45 @@ export function WhatIfSimulator({ scenarios }: { scenarios: WhatIfScenario[] }) 
 
   return (
     <Card className="overflow-hidden">
-      {/* Scenario picker */}
-      <div className="grid border-b border-line sm:grid-cols-3" role="tablist" aria-label="Claim scenarios">
-        {scenarios.map((sc, i) => {
-          const Icon = ICONS[sc.policyType] ?? (sc.policyType === "other" ? FileText : CloudRain);
-          return (
-            <button
-              key={sc.title}
-              role="tab"
-              aria-selected={i === index}
-              onClick={() => setIndex(i)}
-              className={cn(
-                "flex items-center gap-3 border-line px-5 py-4 text-left transition sm:border-r sm:last:border-r-0",
-                i === index ? "bg-surface shadow-[inset_0_-2px_0_var(--color-ink)]" : "bg-canvas/60 hover:bg-canvas",
-                i > 0 && "border-t sm:border-t-0",
-              )}
-            >
-              <span
+      {/* Scenario picker — one colored card per scenario so it's obvious you can switch */}
+      <div className="border-b border-line bg-canvas p-3 sm:p-4">
+        <p className="mb-3 px-1 text-sm font-semibold text-muted">Pick a scenario to stress-test</p>
+        <div className="grid gap-3 sm:grid-cols-3" role="tablist" aria-label="Claim scenarios">
+          {scenarios.map((sc, i) => {
+            const Icon = ICONS[sc.policyType] ?? (sc.policyType === "other" ? FileText : CloudRain);
+            const tone = TONES[sc.policyType] ?? TONES.other;
+            const active = i === index;
+            const title = shortTitle(sc.title);
+            return (
+              <button
+                key={sc.title}
+                role="tab"
+                aria-selected={active}
+                title={sc.title}
+                onClick={() => setIndex(i)}
                 className={cn(
-                  "flex size-9 shrink-0 items-center justify-center rounded-lg border",
-                  i === index ? "border-ink bg-ink text-white" : "border-line bg-surface text-ink-soft",
+                  "group flex items-center gap-3 rounded-2xl border-2 px-4 py-3.5 text-left transition-all",
+                  active
+                    ? cn(tone.activeCard, "shadow-card")
+                    : cn("border-line bg-surface hover:-translate-y-0.5 hover:shadow-card", tone.hoverBorder),
                 )}
               >
-                <Icon className="size-4" />
-              </span>
-              <span className="min-w-0">
-                <span className={cn("block truncate text-sm font-semibold", i === index ? "text-ink" : "text-ink-soft")}>{sc.title}</span>
-                <span className="money block text-xs text-muted">{formatUSD(sc.eventCost)} event</span>
-              </span>
-            </button>
-          );
-        })}
+                <span
+                  className={cn(
+                    "flex size-11 shrink-0 items-center justify-center rounded-xl transition-colors",
+                    active ? tone.solid : tone.soft,
+                  )}
+                >
+                  <Icon className="size-5" />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="line-clamp-2 text-base leading-snug font-bold text-ink">{title}</span>
+                  <span className="money mt-0.5 block text-sm font-semibold text-muted">{formatUSD(sc.eventCost)} event</span>
+                </span>
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       <div className="grid gap-6 p-5 sm:p-6 lg:grid-cols-[1fr_1.15fr]">

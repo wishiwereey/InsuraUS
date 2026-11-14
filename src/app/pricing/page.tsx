@@ -19,10 +19,10 @@ const FAQ = [
     "We never take money from insurers or a cut of the policy you switch to. A flat fee means our only incentive is to find you the best deal.",
   ],
   [
-    "How much can I save?",
-    "Your free audit shows the exact estimated savings for your own policies before you pay anything. If $12 isn't clearly worth it, don't upgrade.",
+    "Is $12 a month worth it?",
+    "Pro costs $144 a year. A single fix — a duplicate add-on, a deductible that's too low, the wrong health plan — often saves more than that, and households commonly overpay by hundreds or even thousands a year. Losing $12 a month beats silently losing hundreds. Your free audit shows your exact number first.",
   ],
-  ["Can I cancel?", "Anytime, in one click from your Account page."],
+  ["Can I cancel?", "Anytime, in one click from your Account page. No calls, no emails. See the Terms page for the full subscription policy."],
   [
     "Is this a real payment?",
     "No. This is a hackathon prototype: checkout runs in test mode, only test card numbers are accepted, and nothing is charged.",
@@ -97,6 +97,21 @@ export default function PricingPage() {
         </div>
       </div>
 
+      {/* Value framing */}
+      <div className="mt-12 grid items-center gap-6 rounded-3xl border border-savings/30 bg-savings-soft p-6 sm:p-8 md:grid-cols-[1fr_auto_1fr]">
+        <div className="text-center md:text-left">
+          <p className="text-sm font-bold tracking-widest text-risk-strong uppercase">Overpaying silently</p>
+          <p className="money mt-1 text-4xl font-extrabold text-risk-strong">−$300 to −$2,000+</p>
+          <p className="mt-1 text-base text-ink-soft">a year in typical leaks: low deductibles, duplicate add-ons, the wrong health plan</p>
+        </div>
+        <p className="text-center text-2xl font-extrabold text-muted">vs</p>
+        <div className="text-center md:text-right">
+          <p className="text-sm font-bold tracking-widest text-savings-strong uppercase">InsuraUS Pro</p>
+          <p className="money mt-1 text-4xl font-extrabold text-savings-strong">−$12/mo</p>
+          <p className="mt-1 text-base text-ink-soft">to find and fix them — and re-check at every renewal</p>
+        </div>
+      </div>
+
       {/* Comparison */}
       <div className="mt-12 overflow-x-auto rounded-3xl border border-line bg-surface shadow-card">
         <table className="w-full min-w-[520px] text-left text-base">
@@ -128,6 +143,13 @@ export default function PricingPage() {
           </div>
         ))}
       </div>
+      <p className="mt-8 text-center text-base text-muted">
+        Full details in our{" "}
+        <Link href="/terms" className="font-semibold text-ink underline underline-offset-4">
+          Terms & subscription policy
+        </Link>
+        .
+      </p>
     </div>
   );
 }
