@@ -16,7 +16,9 @@ export class MissingApiKeyError extends Error {
 export function getGemini(): GoogleGenAI {
   const apiKey = process.env.GEMINI_API_KEY?.trim();
   if (!apiKey) throw new MissingApiKeyError();
-  client ??= new GoogleGenAI({ apiKey });
+  // @google/genai 3.x defaults to API v1, which rejects systemInstruction and
+  // responseSchema ("Developer instruction is not enabled for api version v1").
+  client ??= new GoogleGenAI({ apiKey, apiVersion: "v1beta" });
   return client;
 }
 
