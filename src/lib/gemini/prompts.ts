@@ -1,6 +1,6 @@
 import type { AuditResult, UserContext } from "@/types/insurance";
 
-export const AUDITOR_SYSTEM_PROMPT = `You are CoverLens, an expert US consumer insurance auditor. You act as an independent, educational fiduciary: you are NOT a broker, you earn no commission, and your only goal is that the household pays a fair price for the protection it actually needs.
+export const AUDITOR_SYSTEM_PROMPT = `You are Policy X-Ray, an expert US consumer insurance auditor. You act as an independent, educational fiduciary: you are NOT a broker, you earn no commission, and your only goal is that the household pays a fair price for the protection it actually needs.
 
 You will receive one or more insurance documents (declarations pages, summaries of benefits, enrollment confirmations) as PDFs, plus optional household context. Produce a rigorous audit as JSON matching the provided schema.
 
@@ -49,6 +49,34 @@ Write a polite, firm, ready-to-send email to the carrier with the largest saving
 ## summaryVerdict
 Exactly 2 sentences. Sentence 1: the headline (how much they're overpaying and why). Sentence 2: the single most valuable action.`;
 
+/** Used only for the JSON-mode fallback when the strict responseSchema is rejected. */
+export const AUDIT_JSON_SHAPE = `## Output format
+Return ONE JSON object (no markdown fences) with exactly this shape:
+{
+  "policies": [{
+    "type": "auto"|"health"|"home"|"renters"|"life"|"umbrella"|"other",
+    "carrier": string, "policyNumber": string, "insuredItem": string,
+    "currentAnnualPremium": number, "optimizedAnnualPremium": number,
+    "deductible": string, "coverageLimit": string,
+    "status": "overpaying"|"suboptimal"|"optimized",
+    "plainEnglishSummary": string,
+    "coverageLines": [{ "term": string, "value": string, "plainEnglish": string, "annualPremium"?: number }],
+    "issues": [{ "title": string,
+      "category": "deductible"|"duplicate_coverage"|"unnecessary_coverage"|"underinsured"|"plan_mismatch"|"missing_discount"|"other",
+      "severity": "high"|"medium"|"low", "explanation": string, "annualSavings": number, "actionItem": string }]
+  }],
+  "whatIfScenarios": [{ "title": string, "policyType": string, "eventCost": number, "description": string,
+    "currentPlanOutOfPocket": number, "optimizedPlanOutOfPocket": number,
+    "currentAnnualPremiums": number, "optimizedAnnualPremiums": number, "verdict": string }],
+  "scoreFactors": [{ "label": string, "score": integer 0-100, "note": string }],
+  "insuranceHealthScore": integer 0-100,
+  "totalCurrentAnnualSpend": number, "totalPotentialAnnualSavings": number,
+  "summaryVerdict": string,
+  "negotiationScript": { "recipient": string, "emailSubject": string, "emailBody": string, "phoneTalkingPoints": string[] },
+  "disclaimers": string[]
+}
+All money values are plain numbers in USD (no "$" or commas).`;
+
 export function formatUserContext(ctx: UserContext): string {
   const lines: string[] = [];
   if (ctx.state) lines.push(`State of residence: ${ctx.state}`);
@@ -64,7 +92,7 @@ export function formatUserContext(ctx: UserContext): string {
     : "No household context was provided. Infer state and household details from the documents where possible.";
 }
 
-export const CHAT_SYSTEM_PROMPT = `You are CoverLens Copilot, an independent, educational US insurance expert. The user has uploaded their insurance documents (attached) and already received an audit (summarized below).
+export const CHAT_SYSTEM_PROMPT = `You are Policy X-Ray Copilot, an independent, educational US insurance expert. The user has uploaded their insurance documents (attached) and already received an audit (summarized below).
 
 Rules:
 - Answer ONLY from the attached documents and the audit. Cite the exact coverage line, limit, deductible or page language you rely on (e.g. "Your Rental Reimbursement is $40/day for up to 30 days").

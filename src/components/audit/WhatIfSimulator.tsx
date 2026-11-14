@@ -62,7 +62,7 @@ export function WhatIfSimulator({ scenarios }: { scenarios: WhatIfScenario[] }) 
     const opt = withClaim ? s.optimizedPlanOutOfPocket : 0;
     return [
       { plan: "Current plan", premiums: s.currentAnnualPremiums, outOfPocket: cur, total: s.currentAnnualPremiums + cur },
-      { plan: "CoverLens plan", premiums: s.optimizedAnnualPremiums, outOfPocket: opt, total: s.optimizedAnnualPremiums + opt },
+      { plan: "Optimized plan", premiums: s.optimizedAnnualPremiums, outOfPocket: opt, total: s.optimizedAnnualPremiums + opt },
     ];
   }, [s, withClaim]);
 
@@ -112,12 +112,12 @@ export function WhatIfSimulator({ scenarios }: { scenarios: WhatIfScenario[] }) 
 
           <div className="mt-5 grid grid-cols-2 gap-3">
             <div className="rounded-lg border border-line p-3">
-              <p className="text-[11px] font-medium uppercase tracking-wide text-muted">You pay today</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted">You pay today</p>
               <p className="money mt-1 text-xl font-semibold text-ink">{formatUSD(s.currentPlanOutOfPocket)}</p>
               <p className="text-xs text-muted">out-of-pocket</p>
             </div>
             <div className="rounded-lg border border-line p-3">
-              <p className="text-[11px] font-medium uppercase tracking-wide text-muted">With CoverLens plan</p>
+              <p className="text-xs font-medium uppercase tracking-wide text-muted">Optimized plan</p>
               <p className="money mt-1 text-xl font-semibold text-ink">{formatUSD(s.optimizedPlanOutOfPocket)}</p>
               <p className={cn("money text-xs", oopDelta > 0 ? "text-warn-strong" : oopDelta < 0 ? "text-savings-strong" : "text-muted")}>
                 {oopDelta === 0 ? "same out-of-pocket" : `${oopDelta > 0 ? "+" : "−"}${formatUSD(Math.abs(oopDelta))} vs today`}

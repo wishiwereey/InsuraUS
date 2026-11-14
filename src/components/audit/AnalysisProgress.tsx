@@ -89,7 +89,7 @@ export function AnalysisProgress({ fileNames, context }: AnalysisProgressProps) 
                     !done && !current && "border-line bg-surface text-subtle",
                   )}
                 >
-                  {done ? <Check className="size-3.5" /> : current ? <Loader2 className="size-3.5 animate-spin" /> : <span className="money text-[10px]">{i + 1}</span>}
+                  {done ? <Check className="size-3.5" /> : current ? <Loader2 className="size-3.5 animate-spin" /> : <span className="money text-xs">{i + 1}</span>}
                 </span>
                 <span className={cn(current ? "font-medium text-ink" : "text-ink-soft")}>{step}</span>
               </li>
@@ -99,7 +99,7 @@ export function AnalysisProgress({ fileNames, context }: AnalysisProgressProps) 
 
         <div className="mt-6 flex flex-wrap gap-1.5">
           {fileNames.map((n) => (
-            <span key={n} className="max-w-full truncate rounded-md border border-line bg-canvas px-2 py-1 text-[11px] text-muted">
+            <span key={n} className="max-w-full truncate rounded-md border border-line bg-canvas px-2 py-1 text-xs text-muted">
               {n}
             </span>
           ))}

@@ -1,9 +1,19 @@
 @import "tailwindcss";
 
-/* CoverLens design tokens — high-trust light fintech palette. */
+/* Policy X-Ray design tokens — high-trust fintech light UI with a dark "scan room" accent. */
 @theme {
-  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-sans: var(--font-jakarta), ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Larger, easier-to-read type scale (Tailwind's defaults are 12/14/16). */
+  --text-xs: 0.875rem;
+  --text-xs--line-height: 1.35rem;
+  --text-sm: 1rem;
+  --text-sm--line-height: 1.55rem;
+  --text-base: 1.0625rem;
+  --text-base--line-height: 1.7rem;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.85rem;
 
   --color-canvas: #f8fafc;
   --color-surface: #ffffff;
@@ -11,10 +21,15 @@
   --color-line-strong: #cbd5e1;
   --color-ink: #0f172a;
   --color-ink-soft: #334155;
-  --color-muted: #64748b;
+  --color-muted: #5b6b82;
   --color-subtle: #94a3b8;
 
-  --color-brand: #0f172a;
+  /* Dark "X-ray" surfaces */
+  --color-night: #070d1a;
+  --color-night-2: #0e1729;
+  --color-night-line: #1e2a44;
+  --color-scan: #34d399;
+
   --color-savings: #10b981;
   --color-savings-strong: #047857;
   --color-savings-soft: #ecfdf5;
@@ -24,26 +39,32 @@
   --color-warn: #f59e0b;
   --color-warn-strong: #b45309;
   --color-warn-soft: #fffbeb;
-  --color-info: #6366f1;
+  --color-info: #4f6bd8;
   --color-info-soft: #eef2ff;
 
   --shadow-card: 0 1px 2px rgb(15 23 42 / 0.04), 0 1px 1px rgb(15 23 42 / 0.02);
-  --shadow-lift: 0 12px 32px -12px rgb(15 23 42 / 0.18), 0 2px 6px rgb(15 23 42 / 0.05);
+  --shadow-lift: 0 18px 40px -16px rgb(15 23 42 / 0.22), 0 2px 6px rgb(15 23 42 / 0.05);
+  --shadow-glow: 0 0 0 1px rgb(52 211 153 / 0.25), 0 20px 60px -20px rgb(16 185 129 / 0.45);
 
-  --animate-fade-up: fade-up 0.45s cubic-bezier(0.16, 1, 0.3, 1) both;
-  --animate-shimmer: shimmer 1.6s linear infinite;
+  --animate-fade-up: fade-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  --animate-scan: scan 3.2s ease-in-out infinite;
+  --animate-float: float 6s ease-in-out infinite;
 
   @keyframes fade-up {
-    from { opacity: 0; transform: translateY(8px); }
+    from { opacity: 0; transform: translateY(10px); }
     to { opacity: 1; transform: none; }
   }
   @keyframes sheet-in {
     from { transform: translateX(100%); }
     to { transform: none; }
   }
-  @keyframes shimmer {
-    from { background-position: -200% 0; }
-    to { background-position: 200% 0; }
+  @keyframes scan {
+    0%, 100% { top: 4%; }
+    50% { top: 92%; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
   }
 }
 
@@ -56,9 +77,14 @@
     background: var(--color-canvas);
     color: var(--color-ink);
     font-family: var(--font-sans);
+    font-size: var(--text-base);
+    line-height: var(--text-base--line-height);
+  }
+  h1, h2, h3 {
+    letter-spacing: -0.025em;
   }
   ::selection {
-    background: rgb(16 185 129 / 0.2);
+    background: rgb(16 185 129 / 0.22);
   }
   :focus-visible {
     outline: 2px solid var(--color-info);
@@ -69,13 +95,29 @@
 /* Every dollar amount, deductible and percentage uses tabular figures. */
 @utility money {
   font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum" 1, "cv11" 1;
+  font-feature-settings: "tnum" 1;
   letter-spacing: -0.01em;
+}
+
+/* Blueprint grid used on dark sections. */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, rgb(148 163 184 / 0.07) 1px, transparent 1px),
+    linear-gradient(to bottom, rgb(148 163 184 / 0.07) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+@utility text-gradient {
+  background: linear-gradient(100deg, #6ee7b7 0%, #34d399 40%, #a5b4fc 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
 }
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
   }
 }

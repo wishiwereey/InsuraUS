@@ -38,34 +38,43 @@ function Gauge({ score }: { score: number }) {
   );
 }
 
-export function HealthScoreCard({ score, factors }: { score: number; factors: ScoreFactor[] }) {
+export function HealthScoreCard({ score }: { score: number }) {
   const tone = scoreTone(score);
   return (
-    <Card className="flex flex-col p-5">
-      <div className="flex items-center justify-between">
-        <Eyebrow>Insurance Health Score</Eyebrow>
-        <span className={cn("flex items-center gap-1 text-xs font-semibold", tone.text)}>
-          <tone.Icon className="size-3.5" /> {tone.label}
+    <Card className="flex flex-col p-6">
+      <div className="flex items-center justify-between gap-2">
+        <Eyebrow>Health score</Eyebrow>
+        <span className={cn("flex items-center gap-1 text-sm font-bold", tone.text)}>
+          <tone.Icon className="size-4" /> {tone.label}
         </span>
       </div>
-      <div className="flex justify-center pt-2">
+      <div className="flex flex-1 items-end justify-center pt-3">
         <Gauge score={score} />
       </div>
-      {factors.length > 0 && (
-        <ul className="mt-3 space-y-2">
-          {factors.map((f) => (
-            <li key={f.label} title={f.note}>
-              <div className="flex items-center justify-between text-xs">
-                <span className="text-ink-soft">{f.label}</span>
-                <span className="money font-semibold text-ink">{f.score}</span>
-              </div>
-              <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-canvas">
-                <div className="h-full rounded-full" style={{ width: `${f.score}%`, background: scoreTone(f.score).color }} />
-              </div>
-            </li>
-          ))}
-        </ul>
-      )}
+    </Card>
+  );
+}
+
+/** The four sub-scores behind the headline number. */
+export function ScoreFactorsCard({ factors }: { factors: ScoreFactor[] }) {
+  if (!factors.length) return null;
+  return (
+    <Card className="p-6 sm:p-8">
+      <h2 className="text-2xl font-extrabold text-ink">What drives your score</h2>
+      <ul className="mt-6 space-y-5">
+        {factors.map((f) => (
+          <li key={f.label}>
+            <div className="flex items-center justify-between text-base">
+              <span className="font-bold text-ink">{f.label}</span>
+              <span className={cn("money font-extrabold", scoreTone(f.score).text)}>{f.score}</span>
+            </div>
+            <div className="mt-2 h-2.5 overflow-hidden rounded-full bg-canvas">
+              <div className="h-full rounded-full" style={{ width: `${f.score}%`, background: scoreTone(f.score).color }} />
+            </div>
+            {f.note && <p className="mt-1.5 text-sm text-muted">{f.note}</p>}
+          </li>
+        ))}
+      </ul>
     </Card>
   );
 }

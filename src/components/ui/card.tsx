@@ -23,5 +23,5 @@ export function CardContent({ className, ...props }: React.HTMLAttributes<HTMLDi
 
 /** Small uppercase label used above KPI numbers. */
 export function Eyebrow({ className, ...props }: React.HTMLAttributes<HTMLParagraphElement>) {
-  return <p className={cn("text-[11px] font-semibold uppercase tracking-[0.08em] text-muted", className)} {...props} />;
+  return <p className={cn("text-xs font-semibold uppercase tracking-[0.08em] text-muted", className)} {...props} />;
 }

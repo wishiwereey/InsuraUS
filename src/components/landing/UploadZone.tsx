@@ -50,7 +50,7 @@ export function UploadZone({ files, onChange, disabled }: UploadZoneProps) {
           if (!disabled) addFiles(e.dataTransfer.files);
         }}
         className={cn(
-          "group relative flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-6 py-9 text-center transition-all",
+          "group relative flex cursor-pointer flex-col items-center justify-center gap-3 rounded-2xl border-2 border-dashed px-6 py-12 text-center transition-all",
           dragging
             ? "border-savings bg-savings-soft/60"
             : "border-line-strong/70 bg-canvas/60 hover:border-ink/40 hover:bg-canvas",
@@ -59,18 +59,18 @@ export function UploadZone({ files, onChange, disabled }: UploadZoneProps) {
       >
         <span
           className={cn(
-            "flex size-12 items-center justify-center rounded-full border bg-surface shadow-card transition-transform group-hover:-translate-y-0.5",
+            "flex size-14 items-center justify-center rounded-full border bg-surface shadow-card transition-transform group-hover:-translate-y-0.5",
             dragging ? "border-savings text-savings" : "border-line text-ink",
           )}
         >
-          <UploadCloud className="size-5" />
+          <UploadCloud className="size-6" />
         </span>
         <span>
-          <span className="block text-sm font-semibold text-ink">
+          <span className="block text-lg font-bold text-ink">
             Drop your policy PDFs here, or <span className="underline underline-offset-4">browse</span>
           </span>
-          <span className="mt-1 block text-xs text-muted">
-            Declarations pages, summaries of benefits or enrollment forms • Auto, Health, Home, Renters • up to {MAX_FILES} files
+          <span className="mt-1.5 block text-base text-muted">
+            Auto, Health, Home or Renters · up to {MAX_FILES} PDFs, 10 MB each
           </span>
         </span>
         <input
@@ -88,21 +88,21 @@ export function UploadZone({ files, onChange, disabled }: UploadZoneProps) {
         />
       </label>
 
-      {warning && <p className="mt-2 text-xs font-medium text-risk-strong">{warning}</p>}
+      {warning && <p className="mt-2 text-sm font-semibold text-risk-strong">{warning}</p>}
 
       {files.length > 0 && (
         <ul className="mt-3 grid gap-2 sm:grid-cols-2">
           {files.map((f) => (
             <li
               key={f.name}
-              className="flex animate-fade-up items-center gap-3 rounded-lg border border-line bg-surface px-3 py-2 shadow-card"
+              className="flex animate-fade-up items-center gap-3 rounded-xl border border-line bg-surface px-4 py-3 shadow-card"
             >
-              <span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-risk-soft text-risk-strong">
-                <FileText className="size-4" />
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-lg bg-risk-soft text-risk-strong">
+                <FileText className="size-5" />
               </span>
               <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-medium text-ink">{f.name}</span>
-                <span className="money block text-xs text-muted">{formatBytes(f.size)}</span>
+                <span className="block truncate text-base font-semibold text-ink">{f.name}</span>
+                <span className="money block text-sm text-muted">{formatBytes(f.size)}</span>
               </span>
               <button
                 type="button"
@@ -111,7 +111,7 @@ export function UploadZone({ files, onChange, disabled }: UploadZoneProps) {
                 className="rounded-md p-1 text-subtle transition hover:bg-canvas hover:text-ink"
                 aria-label={`Remove ${f.name}`}
               >
-                <X className="size-4" />
+                <X className="size-5" />
               </button>
             </li>
           ))}

@@ -1,8 +1,8 @@
-# CoverLens — AI Insurance Policy Auditor & Optimizer
+# Policy X-Ray — AI Insurance Policy Auditor & Optimizer
 
 > **Stop silently overpaying for insurance you don't understand.**
 
-CoverLens reads your real insurance PDFs (auto, health, home, renters) and returns an audit in under a minute:
+Policy X-Ray reads your real insurance PDFs (auto, health, home, renters) and returns an audit in under a minute:
 
 - an **Insurance Health Score**
 - hidden overpayments and duplicate coverage, each with a dollar estimate
@@ -26,16 +26,16 @@ first page of the declarations. Common leaks include:
 | Rich PPO or Platinum plan for a household that sees a doctor twice a year | $800–$2,000/yr |
 | Missed bundle, alarm, low-mileage and defensive-driving discounts | $150–$500/yr |
 
-Brokers are paid by commission, so they have little reason to point these out. CoverLens acts as an independent, educational
+Brokers are paid by commission, so they have little reason to point these out. Policy X-Ray acts as an independent, educational
 fiduciary.
 
 ## Try it in 30 seconds
 
-1. Open the app.
+1. Open the app and scroll to **Live demo** (or go to **Start audit**).
 2. Click **"The Miller Family (Austin, TX)"** or **"Alex Rivera (San Diego, CA)"**.
 3. The app generates real multi-page declarations PDFs on the server, downloads them to the browser and uploads them through
    the **same** Gemini pipeline a user upload uses. Nothing is precomputed.
-4. You can also click **Download sample PDFs**, open the files, and drag them into the uploader yourself.
+4. The **Sample policies** page previews all six PDFs; download them and drag them into the uploader yourself.
 
 | Preset | Policies | Annual spend | Problems seeded into the documents |
 | --- | --- | --- | --- |
@@ -45,25 +45,38 @@ fiduciary.
 The documents only contain facts: premiums, limits, plan options and utilization. They never state the findings. Gemini has to
 work them out on its own.
 
+## Pages
+
+| Route | What it is |
+| --- | --- |
+| `/` | Landing: dark "X-ray" hero, the four common leaks, how it works, live demo households |
+| `/audit` | Upload PDFs + optional household context; shows step-by-step progress while Gemini works |
+| `/results` | Report overview: health score, spend, savings, 5-year wealth impact, savings by policy, top 3 wins |
+| `/results/policies` | Expandable policy cards: Jargon Translator + red/amber/green findings, filterable by status |
+| `/results/stress-test` | What-If simulator: 3 claim scenarios, claim year vs quiet year chart |
+| `/results/negotiate` | Email + phone script, copy / open-in-mail, pre-call checklist |
+| `/results/copilot` | Streaming chat grounded in the uploaded PDFs |
+| `/samples` | Preview, download or audit the six generated sample PDFs |
+
+The audit lives in a React context (`AuditProvider`) in the root layout, so it survives navigation between pages. The
+report JSON is kept in `sessionStorage` and the PDFs in IndexedDB, so a page refresh doesn't lose it. Nothing leaves the
+browser except the requests to the app's own API.
+
 ## Architecture
 
 ```
-Browser (Next.js client)                        Server (Next.js route handlers, Node runtime)
-────────────────────────                        ─────────────────────────────────────────────
-UploadZone / DemoPresets ── multipart ──▶ POST /api/analyze
-  (File[] + UserContext)                       ├─ readPdfUploads(): magic-byte check, size limits, base64
-                                               ├─ Gemini gemini-2.5-flash
-                                               │    inlineData PDFs + system prompt (auditor playbook)
-                                               │    responseMimeType: application/json + responseSchema
-                                               └─ normalizeAudit(): clamp, sort, recompute every total
-ResultsDashboard ◀──── AnalyzeResponse ────────┘
-  ├─ KpiRow (score gauge, spend, savings, 5-yr FV @ 7%)
-  ├─ PolicyBreakdown (Jargon Translator + red/amber/green flags)
-  ├─ WhatIfSimulator (Recharts stacked bars, claim year vs quiet year)
-  ├─ NegotiationDrawer (email / phone tabs, copy, mailto)
-  └─ PolicyChat ── multipart (PDFs + history + audit) ──▶ POST /api/chat → streamed text (generateContentStream)
-
-DemoPresets ── GET /api/samples/:id ──▶ pdf-lib generator (src/lib/sample-pdfs.ts)
+Browser                                          Server (Next.js route handlers, Node runtime)
+───────                                          ─────────────────────────────────────────────
+/audit  (File[] + UserContext) ── multipart ──▶ POST /api/analyze
+                                                ├─ readPdfUploads(): magic-byte check, size limits, base64
+                                                ├─ Gemini gemini-2.5-flash, inlineData PDFs + auditor system prompt
+                                                │    1st: responseSchema (strict structured output)
+                                                │    if Gemini rejects the schema (400) → JSON mode + schema in prompt
+                                                │    if the model id is unavailable (404) → gemini-flash-latest
+                                                └─ normalizeAudit(): clamp, sort, recompute every total
+/results/* ◀──── AnalyzeResponse ───────────────┘
+/results/copilot ── PDFs + history + audit ──▶ POST /api/chat → streamed text (generateContentStream)
+DemoPresets / /samples ── GET /api/samples/:id ──▶ pdf-lib generator (src/lib/sample-pdfs.ts)
 ```
 
 ### Design decisions
@@ -108,11 +121,11 @@ Lucide icons · Recharts · pdf-lib · `@google/genai` (`gemini-2.5-flash`).
 Requires **Node 20+**.
 
 ```bash
-git clone <your-repo-url> coverlens
+git clone <your-repo-url> policy-xray
 ```
 
 ```bash
-cd coverlens
+cd policy-xray
 ```
 
 ```bash
@@ -150,31 +163,43 @@ Open http://localhost:3000.
 Import the repo, add `GEMINI_API_KEY` under Project → Settings → Environment Variables, and deploy. `/api/analyze` sets
 `maxDuration = 120`. On the Hobby plan Vercel caps this at 60 s, which is usually enough for `gemini-2.5-flash`.
 
+## Troubleshooting
+
+| Error | Fix |
+| --- | --- |
+| `GEMINI_API_KEY is not configured` | Create `.env.local` with the key and restart `npm run dev` |
+| `Your Gemini API key was rejected` | Re-copy the key from AI Studio; no quotes or spaces |
+| `Gemini API isn't available from your current region` | Deploy to Vercel (US servers) or use a VPN for local testing |
+| `Gemini request failed (400): …` | The message after the colon is Gemini's own explanation; the server log shows the full text |
+
 ## Project structure
 
 ```
 src/
 ├─ app/
-│  ├─ api/analyze/route.ts      # PDF(s) + context → Gemini structured audit
-│  ├─ api/chat/route.ts         # Streaming Policy Copilot grounded in the PDFs
-│  ├─ api/samples/[id]/route.ts # On-the-fly sample declarations PDFs
-│  ├─ layout.tsx · page.tsx · globals.css
+│  ├─ page.tsx                  # Landing
+│  ├─ audit/page.tsx            # Upload + progress
+│  ├─ results/                  # layout.tsx (report header + tabs) and 5 tab pages
+│  ├─ samples/                  # Sample PDF library
+│  └─ api/{analyze,chat,samples/[id]}/route.ts
 ├─ components/
-│  ├─ CoverLensApp.tsx          # Phase state machine: input → analyzing → results
-│  ├─ landing/                  # UploadZone, ContextBar, DemoPresets
+│  ├─ providers/AuditProvider.tsx  # App-wide audit state + persistence
+│  ├─ site/                     # Header, logo
+│  ├─ landing/                  # HeroXray, UploadZone, ContextBar, DemoPresets
+│  ├─ results/ResultsShell.tsx  # Report header, tab nav, empty state
 │  ├─ audit/                    # AnalysisProgress, KpiRow, HealthScoreCard, PolicyBreakdown,
-│  │                            # WhatIfSimulator, NegotiationDrawer, PolicyChat, ResultsDashboard
-│  └─ ui/                       # button, card, badge, tabs, sheet
+│  │                            # WhatIfSimulator, NegotiationPanel, PolicyChat
+│  └─ ui/                       # button, card, badge, tabs
 ├─ lib/
-│  ├─ gemini/                   # client.ts, schema.ts (responseSchema), prompts.ts
+│  ├─ gemini/                   # client.ts (errors, fallbacks), schema.ts, prompts.ts
 │  ├─ audit/normalize.ts        # Deterministic post-processing of model output
-│  ├─ pdf/dec-page-builder.ts   # Small pdf-lib layout engine (tables, headers, page numbers)
+│  ├─ pdf/dec-page-builder.ts   # Small pdf-lib layout engine
 │  ├─ sample-pdfs.ts            # The 6 fictional US policy documents
-│  ├─ samples-meta.ts · presets.ts · finance.ts · request.ts · utils.ts
+│  └─ storage.ts · presets.ts · finance.ts · request.ts · utils.ts
 └─ types/insurance.ts           # Domain types (mirror of the Gemini schema)
 ```
 
 ## Disclaimer
 
-CoverLens is an educational tool. It is not a licensed insurance agent or broker and receives no commissions. Savings are
+Policy X-Ray is an educational tool. It is not a licensed insurance agent or broker and receives no commissions. Savings are
 estimates; confirm changes with your carrier in writing. All sample carriers, people, VINs and policy numbers are fictional.

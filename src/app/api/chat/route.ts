@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import type { Content } from "@google/genai";
-import { GEMINI_MODEL, describeGeminiError, getGemini } from "@/lib/gemini/client";
+import { GEMINI_FALLBACK_MODEL, GEMINI_MODEL, describeGeminiError, geminiErrorDetail, getGemini, isApiError } from "@/lib/gemini/client";
 import { CHAT_SYSTEM_PROMPT, auditDigest, formatUserContext } from "@/lib/gemini/prompts";
 import { RequestValidationError, parseUserContext, readPdfUploads } from "@/lib/request";
 import type { ApiError, AuditResult, ChatMessage } from "@/types/insurance";
@@ -91,17 +91,22 @@ export async function POST(req: Request) {
 
   let stream: AsyncGenerator<{ text?: string }>;
   try {
-    stream = await ai.models.generateContentStream({
-      model: GEMINI_MODEL,
-      contents,
-      config: {
-        systemInstruction: CHAT_SYSTEM_PROMPT,
-        temperature: 0.3,
-        thinkingConfig: { thinkingBudget: 1024 },
-      },
+    const start = (model: string) =>
+      ai.models.generateContentStream({
+        model,
+        contents,
+        config: {
+          systemInstruction: CHAT_SYSTEM_PROMPT,
+          temperature: 0.3,
+          thinkingConfig: { thinkingBudget: 1024 },
+        },
+      });
+    stream = await start(GEMINI_MODEL).catch((err) => {
+      if (isApiError(err) && err.status === 404) return start(GEMINI_FALLBACK_MODEL);
+      throw err;
     });
   } catch (err) {
-    console.error("[chat] Gemini error:", err);
+    console.error("[chat] Gemini error:", geminiErrorDetail(err));
     const { status, message } = describeGeminiError(err);
     return fail(status, message, "UPSTREAM_ERROR");
   }

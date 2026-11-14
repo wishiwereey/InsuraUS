@@ -1,6 +1,5 @@
 "use client";
 
-import { SlidersHorizontal } from "lucide-react";
 import type { DoctorVisitFrequency, UserContext, UsState } from "@/types/insurance";
 import { US_STATES } from "@/types/insurance";
 import { cn } from "@/lib/utils";
@@ -9,7 +8,7 @@ const FEATURED_STATES: UsState[] = ["TX", "CA", "NY", "FL", "IL", "PA", "OH", "G
 const OTHER_STATES = US_STATES.filter((s) => !FEATURED_STATES.includes(s));
 
 const field =
-  "h-10 w-full rounded-lg border border-line bg-surface px-3 text-sm text-ink shadow-card transition focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/5 disabled:opacity-60";
+  "h-12 w-full rounded-xl border border-line bg-surface px-3.5 text-base text-ink shadow-card transition focus:border-ink/40 focus:outline-none focus:ring-2 focus:ring-ink/5 disabled:opacity-60";
 
 interface ContextBarProps {
   value: UserContext;
@@ -23,15 +22,11 @@ export function ContextBar({ value, onChange, disabled }: ContextBarProps) {
   const num = (s: string) => (s === "" ? undefined : Math.max(0, Number(s.replace(/[^0-9]/g, ""))));
 
   return (
-    <fieldset disabled={disabled} className="rounded-xl border border-line bg-canvas/60 p-4">
+    <fieldset disabled={disabled}>
       <legend className="sr-only">Household context</legend>
-      <div className="mb-3 flex items-center gap-2 text-xs font-semibold text-ink-soft">
-        <SlidersHorizontal className="size-3.5" />
-        Sharpen your audit <span className="font-normal text-muted">— optional</span>
-      </div>
-      <div className="grid grid-cols-2 gap-3 md:grid-cols-5">
+      <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
         <label className="block">
-          <span className="mb-1 block text-[11px] font-medium text-muted">State</span>
+          <span className="mb-1.5 block text-sm font-semibold text-ink-soft">State</span>
           <select
             className={field}
             value={value.state ?? ""}
@@ -51,7 +46,7 @@ export function ContextBar({ value, onChange, disabled }: ContextBarProps) {
           </select>
         </label>
         <label className="block">
-          <span className="mb-1 block text-[11px] font-medium text-muted">Age</span>
+          <span className="mb-1.5 block text-sm font-semibold text-ink-soft">Age</span>
           <input
             className={cn(field, "money")}
             inputMode="numeric"
@@ -61,7 +56,7 @@ export function ContextBar({ value, onChange, disabled }: ContextBarProps) {
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-[11px] font-medium text-muted">Household size</span>
+          <span className="mb-1.5 block text-sm font-semibold text-ink-soft">Household size</span>
           <input
             className={cn(field, "money")}
             inputMode="numeric"
@@ -71,7 +66,7 @@ export function ContextBar({ value, onChange, disabled }: ContextBarProps) {
           />
         </label>
         <label className="block">
-          <span className="mb-1 block text-[11px] font-medium text-muted">Doctor visits / yr</span>
+          <span className="mb-1.5 block text-sm font-semibold text-ink-soft">Doctor visits / yr</span>
           <select
             className={field}
             value={value.doctorVisits ?? ""}
@@ -83,12 +78,12 @@ export function ContextBar({ value, onChange, disabled }: ContextBarProps) {
             <option value="high">High (9+)</option>
           </select>
         </label>
-        <label className="col-span-2 block md:col-span-1">
-          <span className="mb-1 block text-[11px] font-medium text-muted">Emergency fund</span>
+        <label className="block">
+          <span className="mb-1.5 block text-sm font-semibold text-ink-soft">Emergency fund</span>
           <div className="relative">
-            <span className="pointer-events-none absolute inset-y-0 left-3 flex items-center text-sm text-muted">$</span>
+            <span className="pointer-events-none absolute inset-y-0 left-3.5 flex items-center text-base text-muted">$</span>
             <input
-              className={cn(field, "money pl-6")}
+              className={cn(field, "money pl-7")}
               inputMode="numeric"
               placeholder="10,000"
               value={value.emergencyFund != null ? value.emergencyFund.toLocaleString("en-US") : ""}

@@ -1,26 +1,52 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Plus_Jakarta_Sans } from "next/font/google";
+import Link from "next/link";
+import { AuditProvider } from "@/components/providers/AuditProvider";
+import { Logo } from "@/components/site/Logo";
+import { SiteHeader } from "@/components/site/SiteHeader";
 import "./globals.css";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
+const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", display: "swap" });
 
 export const metadata: Metadata = {
-  title: "CoverLens — AI Insurance Policy Auditor",
+  title: { default: "Policy X-Ray — AI Insurance Audit", template: "%s · Policy X-Ray" },
   description:
-    "Upload your auto, health and home insurance PDFs and get an instant AI audit: hidden overpayments, duplicate coverage, a claim stress test and a negotiation script. No sign-up.",
+    "See through your insurance. Upload auto, health and home policy PDFs and get an instant AI audit: hidden overpayments, duplicate coverage, a claim stress test and a negotiation script.",
   openGraph: {
-    title: "CoverLens — Stop silently overpaying for insurance",
-    description: "Instant AI audit of your insurance policies. No sign-up.",
+    title: "Policy X-Ray — See through your insurance",
+    description: "Instant AI audit of your auto, health and home insurance policies.",
     type: "website",
   },
 };
 
-export const viewport: Viewport = { themeColor: "#F8FAFC" };
+export const viewport: Viewport = { themeColor: "#070D1A" };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" className={inter.variable}>
-      <body className="min-h-dvh">{children}</body>
+    <html lang="en" className={jakarta.variable}>
+      <body className="flex min-h-dvh flex-col">
+        <AuditProvider>
+          <SiteHeader />
+          <main className="flex-1">{children}</main>
+          <footer className="border-t border-line bg-surface">
+            <div className="mx-auto flex max-w-7xl flex-col gap-6 px-4 py-10 sm:px-6 md:flex-row md:items-start md:justify-between">
+              <div className="max-w-md">
+                <Logo />
+                <p className="mt-3 text-sm text-muted">
+                  An independent, educational insurance auditor. Not a broker, no commissions. Savings are estimates — confirm
+                  changes with your carrier in writing.
+                </p>
+              </div>
+              <nav className="grid grid-cols-2 gap-x-12 gap-y-2 text-sm font-medium text-ink-soft" aria-label="Footer">
+                <Link href="/audit" className="hover:text-ink">Start an audit</Link>
+                <Link href="/samples" className="hover:text-ink">Sample policies</Link>
+                <Link href="/results" className="hover:text-ink">My results</Link>
+                <Link href="/#how-it-works" className="hover:text-ink">How it works</Link>
+              </nav>
+            </div>
+          </footer>
+        </AuditProvider>
+      </body>
     </html>
   );
 }

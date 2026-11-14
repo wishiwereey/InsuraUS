@@ -1,8 +1,8 @@
 {
-  "name": "coverlens",
+  "name": "policy-xray",
   "version": "1.0.0",
   "private": true,
-  "description": "CoverLens — AI insurance policy auditor & optimizer for US households",
+  "description": "Policy X-Ray — AI insurance policy auditor & optimizer for US households",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
@@ -15,7 +15,6 @@
   },
   "dependencies": {
     "@google/genai": "^3.3.0",
-    "@radix-ui/react-dialog": "^1.3.1",
     "@radix-ui/react-slot": "^1.5.0",
     "@radix-ui/react-tabs": "^1.2.1",
     "class-variance-authority": "^0.7.1",

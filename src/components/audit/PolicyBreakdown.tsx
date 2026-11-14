@@ -93,7 +93,7 @@ function PolicyCard({ policy, defaultOpen }: { policy: AnalyzedPolicy; defaultOp
 
         <div className="flex items-center justify-between gap-6 sm:justify-end">
           <div className="text-right">
-            <p className="text-[11px] font-medium uppercase tracking-wide text-muted">Annual premium</p>
+            <p className="text-xs font-medium uppercase tracking-wide text-muted">Annual premium</p>
             <p className="money flex items-center justify-end gap-1.5 text-sm">
               <span className={cn("font-semibold", savings > 0 ? "text-muted line-through decoration-risk/60" : "text-ink")}>
                 {formatUSD(policy.currentAnnualPremium)}
@@ -177,7 +177,7 @@ function PolicyCard({ policy, defaultOpen }: { policy: AnalyzedPolicy; defaultOp
                     >
                       <div className="flex items-start justify-between gap-3">
                         <div>
-                          <p className="text-[11px] font-semibold uppercase tracking-wide text-muted">
+                          <p className="text-xs font-semibold uppercase tracking-wide text-muted">
                             {CATEGORY_LABEL[issue.category] ?? issue.category} · {issue.severity} impact
                           </p>
                           <p className="mt-0.5 text-sm font-semibold text-ink">{issue.title}</p>
