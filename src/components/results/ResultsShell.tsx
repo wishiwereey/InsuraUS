@@ -26,7 +26,7 @@ export function ResultsShell({ children }: { children: React.ReactNode }) {
         <FileStack className="mx-auto size-12 text-subtle" />
         <h1 className="mt-5 text-4xl font-extrabold text-ink">No report yet</h1>
         <p className="mx-auto mt-3 max-w-lg text-lg text-muted">
-          Upload your policies or run a sample household to generate your Policy X-Ray report.
+          Upload your policies or run a sample household to generate your Insura report.
         </p>
         <Link
           href="/audit"
@@ -64,7 +64,7 @@ export function ResultsShell({ children }: { children: React.ReactNode }) {
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <p className="text-sm font-bold tracking-widest text-scan uppercase">
-                Your X-Ray report · {audit.policies.length} policies · {findings} findings
+                Your Insura report · {audit.policies.length} policies · {findings} findings
               </p>
               <p className="mt-4 text-xl leading-snug font-semibold text-white sm:text-2xl">{audit.summaryVerdict}</p>
             </div>

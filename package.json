@@ -1,8 +1,8 @@
 {
-  "name": "policy-xray",
+  "name": "insura",
   "version": "1.0.0",
   "private": true,
-  "description": "Policy X-Ray — AI insurance policy auditor & optimizer for US households",
+  "description": "Insura — AI insurance policy auditor & optimizer for US households",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

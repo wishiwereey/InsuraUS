@@ -114,7 +114,7 @@ export default function OverviewPage() {
             <li key={d}>{d}</li>
           ))}
           <li>
-            Policy X-Ray is educational, not a licensed agent or broker. Savings are estimates — confirm any change with your
+            Insura is educational, not a licensed agent or broker. Savings are estimates — confirm any change with your
             carrier in writing before dropping coverage.
           </li>
         </ul>

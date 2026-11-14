@@ -32,7 +32,7 @@ export function SiteHeader() {
       )}
     >
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-6 px-4 sm:px-6">
-        <Link href="/" aria-label="Policy X-Ray home">
+        <Link href="/" aria-label="Insura home">
           <Logo dark={dark} />
         </Link>
 

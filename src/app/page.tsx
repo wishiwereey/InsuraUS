@@ -80,7 +80,7 @@ export default function LandingPage() {
               Stop silently overpaying for <span className="text-gradient">insurance</span> you don&apos;t understand.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-300 sm:text-xl">
-              Policy X-Ray reads your auto, health and home policies line by line, finds the money you&apos;re wasting, and
+              Insura reads your auto, health and home policies line by line, finds the money you&apos;re wasting, and
               hands you the script to get it back.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">
@@ -88,7 +88,7 @@ export default function LandingPage() {
                 href="/audit"
                 className="inline-flex h-14 items-center justify-center gap-2 rounded-xl bg-scan px-7 text-lg font-bold text-night transition hover:bg-white"
               >
-                X-ray my policies <ArrowRight className="size-5" />
+                Audit my policies <ArrowRight className="size-5" />
               </Link>
               <a
                 href="#demo"

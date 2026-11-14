@@ -1,5 +1,5 @@
 /**
- * Policy X-Ray domain types.
+ * Insura domain types.
  *
  * These interfaces mirror the Gemini `responseSchema` defined in
  * `src/lib/gemini/schema.ts`. If you change one, change the other.

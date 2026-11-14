@@ -9,11 +9,11 @@ import "./globals.css";
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "Policy X-Ray — AI Insurance Audit", template: "%s · Policy X-Ray" },
+  title: { default: "Insura — AI Insurance Audit", template: "%s · Insura" },
   description:
     "See through your insurance. Upload auto, health and home policy PDFs and get an instant AI audit: hidden overpayments, duplicate coverage, a claim stress test and a negotiation script.",
   openGraph: {
-    title: "Policy X-Ray — See through your insurance",
+    title: "Insura — See through your insurance",
     description: "Instant AI audit of your auto, health and home insurance policies.",
     type: "website",
   },

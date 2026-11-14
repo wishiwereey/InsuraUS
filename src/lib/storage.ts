@@ -10,8 +10,8 @@ import type { AnalyzeResponse, UserContext } from "@/types/insurance";
  * storage can be unavailable (private mode, blocked site data).
  */
 
-const SESSION_KEY = "policy-xray:audit:v1";
-const DB_NAME = "policy-xray";
+const SESSION_KEY = "insura:audit:v1";
+const DB_NAME = "insura";
 const STORE = "files";
 
 export interface PersistedAudit {

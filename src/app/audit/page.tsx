@@ -100,7 +100,7 @@ export default function AuditPage() {
               disabled={files.length === 0 || busy}
               onClick={() => runAudit()}
             >
-              <ScanSearch className="!size-5" /> X-ray {files.length > 1 ? `${files.length} policies` : "my policy"}
+              <ScanSearch className="!size-5" /> Audit {files.length > 1 ? `${files.length} policies` : "my policy"}
             </Button>
           </div>
         </div>

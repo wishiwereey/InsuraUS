@@ -1,8 +1,8 @@
-# Policy X-Ray — AI Insurance Policy Auditor & Optimizer
+# Insura — AI Insurance Policy Auditor & Optimizer
 
 > **Stop silently overpaying for insurance you don't understand.**
 
-Policy X-Ray reads your real insurance PDFs (auto, health, home, renters) and returns an audit in under a minute:
+Insura reads your real insurance PDFs (auto, health, home, renters) and returns an audit in under a minute:
 
 - an **Insurance Health Score**
 - hidden overpayments and duplicate coverage, each with a dollar estimate
@@ -26,7 +26,7 @@ first page of the declarations. Common leaks include:
 | Rich PPO or Platinum plan for a household that sees a doctor twice a year | $800–$2,000/yr |
 | Missed bundle, alarm, low-mileage and defensive-driving discounts | $150–$500/yr |
 
-Brokers are paid by commission, so they have little reason to point these out. Policy X-Ray acts as an independent, educational
+Brokers are paid by commission, so they have little reason to point these out. Insura acts as an independent, educational
 fiduciary.
 
 ## Try it in 30 seconds
@@ -121,11 +121,11 @@ Lucide icons · Recharts · pdf-lib · `@google/genai` (`gemini-2.5-flash`).
 Requires **Node 20+**.
 
 ```bash
-git clone <your-repo-url> policy-xray
+git clone <your-repo-url> insura
 ```
 
 ```bash
-cd policy-xray
+cd insura
 ```
 
 ```bash
@@ -201,5 +201,5 @@ src/
 
 ## Disclaimer
 
-Policy X-Ray is an educational tool. It is not a licensed insurance agent or broker and receives no commissions. Savings are
+Insura is an educational tool. It is not a licensed insurance agent or broker and receives no commissions. Savings are
 estimates; confirm changes with your carrier in writing. All sample carriers, people, VINs and policy numbers are fictional.
