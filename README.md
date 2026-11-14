@@ -1,169 +1,169 @@
-# InsuraUS — AI Insurance Policy Auditor & Optimizer
+# InsuraUS — AI-аудитор страховых полисов
 
-> **Stop silently overpaying for insurance you don't understand.**
+> **Перестаньте незаметно переплачивать за страховку, которую вы не понимаете.**
 
-InsuraUS reads your real insurance PDFs (auto, health, home, renters) and returns an audit in under a minute:
+InsuraUS читает страховые полисы американской семьи — авто, медицину, дом или аренду — и за минуту показывает, где вы
+переплачиваете, что застраховано дважды и как вернуть деньги, не оставшись без защиты.
 
-- an **Insurance Health Score**
-- hidden overpayments and duplicate coverage, each with a dollar estimate
-- a **What-If claim stress test** comparing your current plan with the optimized plan
-- a ready-to-send **negotiation script** for your carrier
-- a **Policy Copilot** chat grounded in your own documents
-
-There's no sign-up or login. The app opens straight into the product.
+**Живая версия:** _ссылка будет добавлена после деплоя_ · без регистрации: открыли сайт и сразу работаете.
 
 ---
 
-## The problem
+## Проблема
 
-US working adults aged 25–45 juggle auto, health and home or renters insurance, and most never read past the first page of
-the declarations. The numbers:
+Обычная работающая семья в США платит за страховки каждый месяц сотни долларов, и почти никто не понимает, за что именно.
 
-| | Finding | Source |
-| --- | --- | --- |
-| 💸 | The average worker pays **$6,850 a year (~$570/month)** toward family health coverage through their employer, before any doctor visit. The total family premium averages $26,993. | [KFF Employer Health Benefits Survey, 2025](https://www.kff.org/health-costs/press-release/2025-employer-health-benefits-survey/) |
-| 🤷 | Only **14%** of insured Americans could correctly explain all four basics: deductible, copay, coinsurance and out-of-pocket maximum. | Loewenstein et al., *Journal of Health Economics* 32(5), 2013 ([CMU summary](https://www.cmu.edu/news/stories/archives/2013/august/aug1_understandinghealthinsurance.html)) |
-| 🙈 | **86%** say they understand their insurance, yet **56%** don't know a standard homeowners policy excludes flood, and **55%** don't know personal auto excludes business use. | [Trusted Choice / Big "I" survey, 2024](https://www.businesswire.com/news/home/20240618486693/en/Survey-Most-Americans-Do-Not-Fully-Understand-Insurance-Coverage...Yet-86-Say-They-Do) (≈400 respondents) |
-| 🔎 | **57%** of auto insurance customers shopped for a new policy in the past year, the highest in the study's 19-year history. | [J.D. Power U.S. Insurance Shopping Study, 2025](https://www.insurancejournal.com/news/national/2025/05/02/822373.htm) |
+- Только за медицинскую страховку от работодателя средний работник отдаёт из зарплаты **$6,850 в год** (около $570 в
+  месяц), ещё до первого визита к врачу. — [KFF, 2025](https://www.kff.org/health-costs/press-release/2025-employer-health-benefits-survey/)
+- Лишь **14%** застрахованных американцев смогли правильно объяснить четыре базовых термина: франшизу, доплату,
+  сострахование и лимит расходов. — Loewenstein et al., *Journal of Health Economics*, 2013
+  ([кратко](https://www.cmu.edu/news/stories/archives/2013/august/aug1_understandinghealthinsurance.html))
+- **86%** уверены, что понимают свою страховку, но **56%** не знают, что обычный полис на дом не покрывает наводнение. —
+  [опрос Trusted Choice, 2024](https://www.businesswire.com/news/home/20240618486693/en/Survey-Most-Americans-Do-Not-Fully-Understand-Insurance-Coverage...Yet-86-Say-They-Do)
+  (около 400 респондентов)
+- **57%** владельцев автостраховки за последний год искали полис дешевле — рекорд за 19 лет наблюдений. —
+  [J.D. Power, 2025](https://www.insurancejournal.com/news/national/2025/05/02/822373.htm)
 
-So people pay a lot, don't understand what they're paying for, and are actively looking for a better deal. The usual
-answer, a broker or comparison site, is paid by commission on what it sells.
+Люди много платят, не понимают условий и чувствуют, что их обманывают, но не знают, где именно. Деньги утекают в одних и
+тех же местах:
 
-### Common leaks we look for
+- **Слишком низкая франшиза на старую машину.** Человек годами переплачивает за то, чтобы при мелкой аварии отдать $250, а
+  не $1,000. Повышение франшизы с $200 до $1,000 снижает эту часть премии на 40% и больше
+  ([Insurance Information Institute](https://www.compare.com/auto-insurance/resources/high-or-low-deductible)).
+- **Одно и то же покрытие куплено дважды.** Помощь на дороге в двух полисах, защита от кражи личности и в автостраховке, и
+  в страховке дома.
+- **Не тот медицинский план.** Дорогой PPO у семьи, которая ходит к врачу пару раз в год, хотя работодатель предлагает
+  более дешёвый план с накопительным счётом HSA и сам кладёт туда деньги.
+- **Скидки, которые никто не применил.** За пакет полисов, сигнализацию, малый пробег. Страховая сама о них не напомнит.
 
-| Leak | Why it costs you |
-| --- | --- |
-| Low collision/comprehensive deductibles on older cars | Raising the deductible from $200 to $1,000 can cut that part of the premium by **40% or more** ([Insurance Information Institute](https://www.compare.com/auto-insurance/resources/high-or-low-deductible)) |
-| Roadside, ID-theft or rental add-ons bought twice | Each duplicate typically costs ~$50–200/yr (our estimate) |
-| A rich PPO/Platinum plan for a household that rarely sees a doctor | Premiums are the biggest line item (see KFF above). A cheaper HDHP plus an employer HSA seed often wins on expected annual cost |
-| Missed bundle, alarm, low-mileage and defensive-driving discounts | Carriers rarely volunteer them; you have to ask |
+Обычный способ разобраться — брокер или сайт сравнения цен. Но они зарабатывают комиссию с продажи нового полиса, поэтому
+им выгодно продать, а не объяснить.
 
-InsuraUS acts as an independent, educational fiduciary: no commissions, and the fee is the same whatever you decide.
+## Решение
 
-## Try it in 30 seconds
+Пользователь загружает PDF своих полисов: страницу деклараций (declarations page) или описание медплана от работодателя.
+Через полминуты он получает понятный отчёт:
 
-1. Open the app and scroll to **Live demo** (or go to **Start audit**).
-2. Click **"The Miller Family (Austin, TX)"** or **"Alex Rivera (San Diego, CA)"**.
-3. The app generates real multi-page declarations PDFs on the server, downloads them to the browser and uploads them through
-   the **same** Gemini pipeline a user upload uses. Nothing is precomputed.
-4. The **Sample policies** page previews all six PDFs; download them and drag them into the uploader yourself.
+- **Оценка здоровья страховки (0–100)** и итог одной фразой: сколько вы переплачиваете и какое действие важнее всего.
+- **Переводчик с языка страховщиков.** Каждая строка полиса объяснена человеческим языком, рядом красные, жёлтые и
+  зелёные отметки: что менять, а что оставить.
+- **Стресс-тест.** Три реалистичных страховых случая, подобранные под ваши полисы: ДТП, поход в реанимацию, протечка. Мы
+  показываем, сколько вы заплатите из своего кармана сейчас и после наших изменений. Так видно, что экономия не обернётся
+  катастрофой в плохой год. Каждое повышение франшизы проверяется против вашего резервного фонда.
+- **Готовый скрипт переговоров.** Письмо и тезисы для звонка вашей **текущей** страховой, с номерами ваших полисов и
+  конкретными просьбами. Часто сэкономить можно, никуда не переходя.
+- **Policy Copilot.** Чат, который прочитал ваши же документы. «Покрывает ли мой полис аренду машины?», «Что будет, если
+  поднять франшизу до $1,500?» — ответ с цитатой из полиса и расчётом.
 
-| Preset | Policies | Annual spend | Problems seeded into the documents |
-| --- | --- | --- | --- |
-| Miller Family, Austin TX | Auto (2 cars), Family PPO, HO-3 | **$8,640** | $250 deductibles on a $7.2k Civic, duplicate roadside and ID-theft cover, underused PPO next to a cheaper HSA option with a $1,200 employer seed, alarm and bundle discounts missing |
-| Alex Rivera, San Diego CA | Auto (2012 Mazda3), Renters, Platinum PPO | **$3,420** | Full physical-damage cover on a ~$6.5k car, liability at CA minimum (30/60/15), low-mileage discount missing for a hybrid worker, Platinum plan with 1 visit/yr |
+Если своего полиса под рукой нет, на сайте есть две демо-семьи: Миллеры из Остина (авто, семейный PPO, дом; $8,640 в год)
+и Алекс Ривера из Сан-Диего (старая машина, аренда, платиновый медплан; $3,420 в год). Для каждой генерируются настоящие
+многостраничные PDF, которые проходят тот же анализ, что и ваши документы. Выводов в самих документах нет, только факты:
+проблемы AI находит сам.
 
-The documents only contain facts: premiums, limits, plan options and utilization. They never state the findings. Gemini has to
-work them out on its own.
+## Почему это работает по-настоящему
 
-## Pages
+Это не макет и не заранее записанные ответы. Каждый аудит — живой вызов **Google Gemini 2.5 Flash**, которому мы передаём
+PDF целиком и требуем ответ строго по JSON-схеме.
 
-| Route | What it is |
-| --- | --- |
-| `/` | Landing: dark "X-ray" hero, the four common leaks, how it works, live demo households |
-| `/audit` | Upload PDFs + optional household context; shows step-by-step progress while Gemini works |
-| `/results` | Report overview: health score, spend, savings, 5-year wealth impact, savings by policy, top 3 wins |
-| `/results/policies` | Expandable policy cards: Jargon Translator + red/amber/green findings, filterable by status |
-| `/results/stress-test` | What-If simulator: 3 claim scenarios, claim year vs quiet year chart |
-| `/results/negotiate` | Email + phone script, copy / open-in-mail, pre-call checklist |
-| `/results/copilot` | Streaming chat grounded in the uploaded PDFs |
-| `/samples` | Preview, download or audit the six generated sample PDFs |
-| `/pricing` | Free trial vs Pro ($12/mo), comparison table, FAQ |
-| `/checkout` | Test-mode checkout (test cards only, nothing is charged) |
-| `/account` | Plan, renewal, invoice, cancel, reset demo billing |
+Главный принцип: **AI извлекает факты и рассуждает, а считает код.** Языковые модели ошибаются в арифметике, поэтому
+после ответа Gemini наш код сам пересчитывает итоговые суммы, экономию, статусы полисов и стоимость сценариев. Цифры в
+отчёте всегда сходятся друг с другом, и модель не может «нарисовать» экономию из воздуха.
 
-The audit lives in a React context (`AuditProvider`) in the root layout, so it survives navigation between pages. The
-report JSON is kept in `sessionStorage` and the PDFs in IndexedDB, so a page refresh doesn't lose it. Nothing leaves the
-browser except the requests to the app's own API.
+Логика аудитора — это не «спроси у чат-бота», а набор правил американского страхового рынка: минимальные лимиты разных
+штатов (например, 30/60/25 в Техасе и 30/60/15 в Калифорнии с 2025 года), правило 80% для страховки дома, процентные
+франшизы на ураган и град, налоговая выгода HSA, сравнение медпланов по ожидаемым и худшим годовым расходам.
 
-## Business model (prototype billing)
+Надёжность проверена:
 
-| Plan | Price | Includes |
-| --- | --- | --- |
-| Free trial | $0 | 1 audit of your own policies, up to 2 PDFs, 5 Copilot questions |
-| Pro | $12 / month | Unlimited audits, up to 6 PDFs per audit, unlimited Copilot |
+- **68 автотестов, около 95% покрытия** серверной логики. Проверяются пересчёт итогов, защита тарифа от подделки,
+  валидация загрузок, лимиты пробного периода и поведение при ошибках Gemini. Последний прогон лежит в
+  [`test-results/TEST_RESULTS.md`](test-results/TEST_RESULTS.md).
+- Тесты ловят настоящие баги: мы специально возвращали старую ошибку подсчёта экономии и отключали проверку подписи —
+  тесты падали.
+- **CI на GitHub Actions** на каждый коммит проверяет типы, запускает тесты и собирает продакшен-версию.
+- Если Gemini отклонит схему ответа, приложение автоматически повторит запрос в упрощённом режиме. Если модель
+  недоступна, переключится на запасную. Ошибки (неверный ключ, лимит запросов, неподдерживаемый регион) показываются
+  пользователю понятным текстом.
+- PDF проверяется по содержимому, а не по расширению. Файлы обрабатываются в памяти и нигде не сохраняются.
 
-The sample households are always free and never count against the trial. The server recognizes them by SHA-256, because
-sample generation is deterministic.
+## Для кого
 
-How it works without accounts or a database:
-- Plan state is kept in two **HMAC-signed, httpOnly cookies**: `insuraus_pro` and `insuraus_trial`. The server enforces
-  every limit in `/api/analyze` and `/api/chat` and returns `402 PAYWALL` when one is hit. Editing a cookie can't grant
-  Pro, because the signature check fails.
-- `/checkout` runs in **test mode only**. It accepts only the test cards `4242 4242 4242 4242` and
-  `5555 5555 5555 4444`. The full card number never leaves the browser; the server receives only the last 4 digits and the
-  brand.
-- `/account` shows the plan, renewal date and invoice, and can cancel. "Reset demo billing" returns to a fresh trial,
-  which helps when demoing the paywall.
-- Going live would mean swapping `/api/billing/checkout` for a Stripe Checkout Session plus webhook, and moving plan state
-  onto user accounts. Clearing cookies currently resets the trial, which is acceptable for a prototype.
+Работающие американцы 25–45 лет: семьи и одиночки, которые платят сразу за несколько страховок — машина, жильё,
+медицина — и выбирают медплан на работе раз в год. У них есть доход и что защищать, но нет времени и желания читать
+двадцать страниц мелкого шрифта. Они уже чувствуют, что переплачивают (57% ищут полис дешевле), но не знают, где именно.
 
-Set `BILLING_SECRET` to a long random string in production. Without it, a secret is derived from `GEMINI_API_KEY`.
+## Как продукт зарабатывает
 
-## Architecture
+Бесплатно человек получает один полный аудит своих документов (до двух PDF) и пять вопросов к Copilot. Он видит **свою
+конкретную сумму переплаты** до того, как заплатить хоть цент. Это и есть главный аргумент купить подписку.
+
+**InsuraUS Pro — $12 в месяц:** безлимитные аудиты, до шести полисов за раз (так находятся дубли между разными
+компаниями), безлимитный Copilot. $144 в год против сотен долларов переплаты: одно найденное исправление обычно окупает
+подписку. Pro пригодится каждый раз, когда приходит письмо о продлении с новой ценой, покупается машина или наступает
+период выбора медплана на работе.
+
+Мы сознательно **не берём комиссию** со страховых компаний и не получаем процент с нового полиса. Фиксированная цена
+означает, что нам всё равно, какую страховку вы выберете. Нам важно только, чтобы вы не переплачивали.
+
+Масштаб: чтобы выйти на $100M годовой выручки, нужно около 700 тысяч подписчиков. Это малая доля американских
+домохозяйств, которые платят одновременно за авто, жильё и медицину.
+
+Оплата сейчас — прототип: оформление подписки работает в тестовом режиме, принимает только тестовые карты и ничего не
+списывает. Лимиты при этом проверяет сервер, а статус тарифа хранится в подписанных cookie, так что подделать Pro
+нельзя. Для запуска достаточно заменить тестовый checkout на Stripe.
+
+## Чем мы отличаемся
+
+Сравнением страховок занимаются брокеры и агрегаторы вроде Policygenius, The Zebra и Jerry. Но их бизнес — продать вам
+новый полис и получить комиссию. InsuraUS устроен иначе:
+
+1. **Мы не продаём страховку.** У нас нет стимула советовать переход, поэтому совет честный.
+2. **Все полисы семьи сразу.** Авто, дом и **медстраховка от работодателя** вместе, с поиском дублей между разными
+   компаниями. Агрегаторы обычно вообще не трогают медплан с работы, хотя это самая дорогая страховка в семье.
+3. **Стресс-тест вместо слепой экономии.** Мы показываем, не обернётся ли дешёвый план большими расходами при реальном
+   страховом случае.
+4. **Экономия без смены страховщика.** Скрипт переговоров с текущей компанией — то, чего не делает ни один сервис,
+   живущий на комиссиях от продажи новых полисов.
+
+## Как устроено
+
+**Стек:** Next.js 16 (App Router), TypeScript, Tailwind CSS 4, компоненты в стиле shadcn/ui на Radix, Recharts,
+pdf-lib, `@google/genai` (Gemini 2.5 Flash), Vitest.
+
+**Путь данных:** браузер отправляет PDF и необязательные данные о семье (штат, возраст, резервный фонд) на
+`/api/analyze`. Сервер проверяет файлы и тариф, передаёт PDF в Gemini вместе с правилами аудита и схемой ответа, затем
+пересчитывает все цифры и возвращает отчёт. Copilot (`/api/chat`) отвечает потоком, опираясь на те же PDF. Демо-PDF
+генерируются на сервере (`/api/samples/:id`), и сервер узнаёт их по хешу, поэтому демо всегда бесплатны.
+
+**Страницы:** главная, загрузка полисов, отчёт с вкладками (обзор, полисы, стресс-тест, переговоры, Copilot),
+библиотека демо-PDF, тарифы, оформление подписки, аккаунт, условия использования.
+
+**Где что лежит:**
 
 ```
-Browser                                          Server (Next.js route handlers, Node runtime)
-───────                                          ─────────────────────────────────────────────
-/audit  (File[] + UserContext) ── multipart ──▶ POST /api/analyze
-                                                ├─ readPdfUploads(): magic-byte check, size limits, base64
-                                                ├─ Gemini gemini-2.5-flash, inlineData PDFs + auditor system prompt
-                                                │    1st: responseSchema (strict structured output)
-                                                │    if Gemini rejects the schema (400) → JSON mode + schema in prompt
-                                                │    if the model id is unavailable (404) → gemini-flash-latest
-                                                └─ normalizeAudit(): clamp, sort, recompute every total
-/results/* ◀──── AnalyzeResponse ───────────────┘
-/results/copilot ── PDFs + history + audit ──▶ POST /api/chat → streamed text (generateContentStream)
-DemoPresets / /samples ── GET /api/samples/:id ──▶ pdf-lib generator (src/lib/sample-pdfs.ts)
+src/
+├─ app/                     страницы и API (analyze, chat, samples, billing)
+├─ components/              интерфейс: загрузка, отчёт, графики, чат
+├─ lib/
+│  ├─ gemini/               клиент, схема ответа, правила аудитора
+│  ├─ audit/normalize.ts    пересчёт и проверка ответа модели
+│  ├─ billing/              тарифы и подписанные cookie
+│  └─ sample-pdfs.ts        генератор демо-полисов
+└─ types/insurance.ts       типы данных
+tests/                      автотесты
+test-results/               отчёт последнего прогона
 ```
 
-### Design decisions
+## Запуск локально
 
-- **The LLM reasons, deterministic code does the arithmetic.** Gemini extracts facts and makes judgments. `normalizeAudit()`
-  then recomputes each policy's optimized premium (current minus the sum of its issue savings), the portfolio totals, the
-  what-if net costs (premiums plus out-of-pocket) and each policy's status. The numbers on screen always add up.
-- **Strict structured output.** `src/lib/gemini/schema.ts` is a full `responseSchema` with enums, required fields and
-  `propertyOrdering` (extract → diagnose → quantify → summarize). It mirrors `src/types/insurance.ts`.
-- **Stateless and private.** There are no accounts and no database. PDFs stay in memory for the length of the request. The chat
-  re-sends the PDFs each turn, so the server never stores them.
-- **Honest trade-offs.** The prompt requires at least one scenario where the cheaper plan costs *more* out-of-pocket. It also
-  ties every deductible increase to the household's emergency fund.
-- **Defensive input handling.** Uploads are checked by `%PDF-` magic bytes, with limits of 6 files, 10 MB per file and 18 MB
-  total (Gemini's inline limit is 20 MB). Household context is whitelisted. Upstream errors are mapped to safe messages (rate
-  limit, bad key, outage).
-
-## Insurance logic in the auditor prompt
-
-`src/lib/gemini/prompts.ts` holds a written-out playbook:
-
-- **Auto:** drop or raise physical-damage coverage when ACV is under ~$8k or collision+comp is more than 10% of ACV, but only
-  without a lienholder. Moving from $250 to $1,000 deductibles saves an estimated 15–25% on collision, but only if the
-  emergency fund can cover the higher deductible. Flags duplicate towing/roadside and ID-theft cover, missing discounts (bundle,
-  paperless, TX defensive driving, low mileage/telematics) and liability at state minimums (suggests 100/300/100 plus an
-  umbrella).
-- **Health:** compares every plan option in the document by expected annual cost (premiums + expected out-of-pocket from actual
-  utilization − employer HSA seed − tax savings) and by worst-case cost (premiums + OOP max − HSA seed). Plan changes are timed
-  to Open Enrollment or a Qualifying Life Event.
-- **Home/Renters:** checks the 80% replacement-cost rule, TX/FL/coastal wind and hail percentage deductibles, flood exclusion,
-  roof age, monitored-alarm credits, and $100k vs $300k renters liability.
-- **State nuance:** TX 30/60/25, CA 30/60/15 (since 2025) and the Good Driver discount, FL PIP and hurricane deductibles, NY
-  no-fault.
-
-## Tech stack
-
-Next.js 16 (App Router) · TypeScript · Tailwind CSS v4 · shadcn/ui-style primitives on Radix (Dialog, Tabs, Slot) ·
-Lucide icons · Recharts · pdf-lib · `@google/genai` (`gemini-2.5-flash`).
-
-## Local setup
-
-Requires **Node 20+**.
+Нужен Node.js 20 или новее.
 
 ```bash
-git clone <your-repo-url> insuraus
+git clone https://github.com/wishiwereey/InsuraUS.git
 ```
 
 ```bash
-cd insuraus
+cd InsuraUS
 ```
 
 ```bash
@@ -174,95 +174,31 @@ npm install
 cp .env.example .env.local
 ```
 
-Get a free API key at https://aistudio.google.com/apikey and set `GEMINI_API_KEY` in `.env.local`. Then start the dev server:
+Получите бесплатный ключ на https://aistudio.google.com/apikey и впишите его в `.env.local` как `GEMINI_API_KEY`.
+Затем:
 
 ```bash
 npm run dev
 ```
 
-Open http://localhost:3000.
+Откройте http://localhost:3000.
 
-| Script | What it does |
-| --- | --- |
-| `npm run dev` | Dev server |
-| `npm run build` / `npm start` | Production build and server |
-| `npm run typecheck` | `tsc --noEmit` |
-| `npm run samples` | Writes all 6 demo PDFs to `./sample-pdfs/` |
+Другие команды: `npm test` — тесты, `npm run test:report` — тесты с отчётом о покрытии, `npm run build` — продакшен-сборка,
+`npm run samples` — сохранить демо-PDF в папку `sample-pdfs/`.
 
-### Environment variables
+**Переменные окружения:**
+- `GEMINI_API_KEY` — обязательно, ключ Google AI Studio (используется только на сервере);
+- `BILLING_SECRET` — длинная случайная строка для подписи cookie тарифа, обязательно задайте в продакшене;
+- `GEMINI_MODEL` — необязательно, по умолчанию `gemini-2.5-flash`.
 
-| Name | Required | Description |
-| --- | --- | --- |
-| `GEMINI_API_KEY` | ✅ | Google AI Studio key, used only on the server |
-| `GEMINI_MODEL` | – | Overrides the model (default `gemini-2.5-flash`) |
-| `BILLING_SECRET` | – | Signs the plan cookies. Set it in production |
+**Деплой на Vercel:** импортируйте репозиторий, добавьте переменные окружения в настройках проекта и нажмите Deploy.
 
-### Deploying to Vercel
+**Частые ошибки:** «GEMINI_API_KEY is not configured» — нет файла `.env.local` или сервер не перезапущен; «API key was
+rejected» — ключ скопирован с пробелами или кавычками; «not available from your current region» — Gemini API недоступен в
+вашей стране: задеплойте на Vercel (серверы в США) или используйте VPN.
 
-Import the repo, add `GEMINI_API_KEY` under Project → Settings → Environment Variables, and deploy. `/api/analyze` sets
-`maxDuration = 120`. On the Hobby plan Vercel caps this at 60 s, which is usually enough for `gemini-2.5-flash`.
+## Важно
 
-## Testing
-
-```bash
-npm test              # run the suite once
-npm run test:report   # tests + coverage → test-results/TEST_RESULTS.md and junit.xml
-```
-
-There are 68 tests (Vitest), with **~95% statement coverage** of `src/lib` and `src/app/api`. The latest run is in
-[`test-results/TEST_RESULTS.md`](test-results/TEST_RESULTS.md). The tests need no Gemini key:
-
-| Suite | What it proves |
-| --- | --- |
-| `tests/normalize.test.ts` | The model's math is never trusted: totals and statuses are recomputed, savings and protection upgrades are kept separate, out-of-pocket is capped, the verdict is trimmed to one sentence |
-| `tests/billing.test.ts` | Plan cookies are HMAC-signed: a tampered or foreign-signed cookie can't grant Pro or reset the trial, and expired subscriptions downgrade |
-| `tests/request.test.ts` | Uploads are checked by magic bytes, plus count and size limits; household context is whitelisted |
-| `tests/api.test.ts` | Real route handlers: the free-trial file and audit limits, the Copilot question limit, sample PDFs always free, the checkout → status → cancel lifecycle |
-| `tests/gemini.test.ts` | Gemini is replaced by a fake client to test the success path, the retry in JSON mode when the schema is rejected (400), the backup model when the model is not found (404), and the error messages |
-| `tests/lib.test.ts` | Future-value math, formatting, and deterministic sample PDFs whose presets add up to the advertised spend |
-
-To check that the suite catches real bugs, we deliberately reintroduced the old "net savings" bug and skipped the cookie
-signature check. Both were caught.
-
-CI (`.github/workflows/ci.yml`) runs the type check, the tests with the report, and a production build on every push.
-
-## Troubleshooting
-
-| Error | Fix |
-| --- | --- |
-| `GEMINI_API_KEY is not configured` | Create `.env.local` with the key and restart `npm run dev` |
-| `Your Gemini API key was rejected` | Re-copy the key from AI Studio; no quotes or spaces |
-| `Gemini API isn't available from your current region` | Deploy to Vercel (US servers) or use a VPN for local testing |
-| `Gemini request failed (400): …` | The message after the colon is Gemini's own explanation; the server log shows the full text |
-
-## Project structure
-
-```
-src/
-├─ app/
-│  ├─ page.tsx                  # Landing
-│  ├─ audit/page.tsx            # Upload + progress
-│  ├─ results/                  # layout.tsx (report header + tabs) and 5 tab pages
-│  ├─ samples/                  # Sample PDF library
-│  └─ api/{analyze,chat,samples/[id]}/route.ts
-├─ components/
-│  ├─ providers/AuditProvider.tsx  # App-wide audit state + persistence
-│  ├─ site/                     # Header, logo
-│  ├─ landing/                  # HeroXray, UploadZone, ContextBar, DemoPresets
-│  ├─ results/ResultsShell.tsx  # Report header, tab nav, empty state
-│  ├─ audit/                    # AnalysisProgress, KpiRow, HealthScoreCard, PolicyBreakdown,
-│  │                            # WhatIfSimulator, NegotiationPanel, PolicyChat
-│  └─ ui/                       # button, card, badge, tabs
-├─ lib/
-│  ├─ gemini/                   # client.ts (errors, fallbacks), schema.ts, prompts.ts
-│  ├─ audit/normalize.ts        # Deterministic post-processing of model output
-│  ├─ pdf/dec-page-builder.ts   # Small pdf-lib layout engine
-│  ├─ sample-pdfs.ts            # The 6 fictional US policy documents
-│  └─ storage.ts · presets.ts · finance.ts · request.ts · utils.ts
-└─ types/insurance.ts           # Domain types (mirror of the Gemini schema)
-```
-
-## Disclaimer
-
-InsuraUS is an educational tool. It is not a licensed insurance agent or broker and receives no commissions. Savings are
-estimates; confirm changes with your carrier in writing. All sample carriers, people, VINs and policy numbers are fictional.
+InsuraUS — образовательный инструмент, а не страховой агент или брокер. Суммы экономии — оценки: прежде чем отказываться
+от покрытия, подтвердите изменения у своей страховой компании письменно. Все компании, люди, номера полисов и VIN в
+демо-документах вымышлены.
