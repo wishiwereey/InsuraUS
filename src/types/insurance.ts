@@ -1,5 +1,5 @@
 /**
- * Insura domain types.
+ * InsuraUS domain types.
  *
  * These interfaces mirror the Gemini `responseSchema` defined in
  * `src/lib/gemini/schema.ts`. If you change one, change the other.
@@ -139,12 +139,16 @@ export interface AnalyzeResponse {
     model: string;
     fileNames: string[];
     durationMs: number;
+    /** True when every document was a built-in sample (free, never counts against the trial). */
+    demo: boolean;
   };
 }
 
 export interface ApiError {
   error: string;
-  code?: "MISSING_API_KEY" | "BAD_REQUEST" | "FILE_TOO_LARGE" | "UPSTREAM_ERROR" | "INVALID_AI_OUTPUT";
+  code?: "MISSING_API_KEY" | "BAD_REQUEST" | "FILE_TOO_LARGE" | "UPSTREAM_ERROR" | "INVALID_AI_OUTPUT" | "PAYWALL";
+  /** Present when code === "PAYWALL". */
+  reason?: "trial_used" | "file_limit" | "chat_limit";
 }
 
 export interface ChatMessage {

@@ -80,7 +80,7 @@ export default function LandingPage() {
               Stop silently overpaying for <span className="text-gradient">insurance</span> you don&apos;t understand.
             </h1>
             <p className="mt-6 max-w-xl text-lg leading-relaxed text-slate-300 sm:text-xl">
-              Insura reads your auto, health and home policies line by line, finds the money you&apos;re wasting, and
+              InsuraUS reads your auto, health and home policies line by line, finds the money you&apos;re wasting, and
               hands you the script to get it back.
             </p>
             <div className="mt-9 flex flex-col gap-3 sm:flex-row">

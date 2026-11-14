@@ -8,6 +8,10 @@ import { ContextBar } from "@/components/landing/ContextBar";
 import { DemoPresets } from "@/components/landing/DemoPresets";
 import { UploadZone } from "@/components/landing/UploadZone";
 import { Button } from "@/components/ui/button";
+import { UpgradeCard } from "@/components/billing/UpgradeCard";
+import { useBilling } from "@/components/providers/BillingProvider";
+import { FREE_TRIAL, PAYWALL_COPY } from "@/lib/billing/plans";
+import { Gift } from "lucide-react";
 
 const TIPS = [
   "Look for “Declarations Page” in your auto, home or renters policy — it's usually page 1–3.",
@@ -16,7 +20,9 @@ const TIPS = [
 ];
 
 export default function AuditPage() {
-  const { status, files, setFiles, context, setContext, runAudit, error, activePreset, result } = useAudit();
+  const { status, files, setFiles, context, setContext, runAudit, error, paywall, activePreset, result } = useAudit();
+  const billing = useBilling();
+  const trialUsed = !!billing.status && !billing.isPro && billing.status.trialAuditsLeft === 0;
 
   if (status === "analyzing") {
     return (
@@ -55,15 +61,34 @@ export default function AuditPage() {
         </Link>
       )}
 
+      {billing.status && !billing.isPro && !trialUsed && (
+        <div className="mt-6 flex flex-col gap-3 rounded-2xl border border-info/30 bg-info-soft px-5 py-4 text-base text-ink sm:flex-row sm:items-center sm:justify-between">
+          <span className="flex items-start gap-2">
+            <Gift className="mt-0.5 size-5 shrink-0 text-info" />
+            <span>
+              <span className="font-bold">Free trial:</span> {billing.status.trialAuditsLeft} audit of your own policies, up to{" "}
+              {FREE_TRIAL.maxFiles} PDFs. Sample households are always free.
+            </span>
+          </span>
+          <Link href="/pricing" className="shrink-0 font-bold text-info hover:underline">
+            See Pro →
+          </Link>
+        </div>
+      )}
+
       <div className="mt-10 grid gap-8 lg:grid-cols-[1.6fr_1fr]">
         <div className="space-y-6">
+          {trialUsed || paywall ? (
+            <UpgradeCard message={PAYWALL_COPY[paywall ?? "trial_used"]} />
+          ) : (
+          <>
           <section className="rounded-3xl border border-line bg-surface p-6 shadow-card sm:p-8">
             <h2 className="flex items-center gap-3 text-xl font-bold text-ink">
               <span className="money flex size-8 items-center justify-center rounded-full bg-ink text-sm text-white">1</span>
               Add your PDFs
             </h2>
             <div className="mt-5">
-              <UploadZone files={files} onChange={setFiles} disabled={busy} />
+              <UploadZone files={files} onChange={setFiles} disabled={busy} maxFiles={billing.maxFiles} />
             </div>
           </section>
 
@@ -80,7 +105,7 @@ export default function AuditPage() {
             </div>
           </section>
 
-          {error && (
+          {error && !paywall && (
             <div role="alert" className="flex items-start gap-3 rounded-2xl border border-risk/30 bg-risk-soft p-5 text-risk-strong">
               <AlertCircle className="mt-0.5 size-5 shrink-0" />
               <div>
@@ -103,6 +128,8 @@ export default function AuditPage() {
               <ScanSearch className="!size-5" /> Audit {files.length > 1 ? `${files.length} policies` : "my policy"}
             </Button>
           </div>
+          </>
+          )}
         </div>
 
         <aside className="space-y-6">

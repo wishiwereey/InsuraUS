@@ -13,11 +13,17 @@ import { AUDITOR_SYSTEM_PROMPT, AUDIT_JSON_SHAPE, formatUserContext } from "@/li
 import { auditResponseSchema } from "@/lib/gemini/schema";
 import { RequestValidationError, parseUserContext, readPdfUploads } from "@/lib/request";
 import type { AnalyzeResponse, ApiError, AuditResult } from "@/types/insurance";
+import { FREE_TRIAL, PAYWALL_COPY, type PaywallReason } from "@/lib/billing/plans";
+import { sampleHashes } from "@/lib/billing/samples";
+import { readBilling, trialCookie } from "@/lib/billing/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 // Multi-document audits with reasoning typically take 15–45 s.
 export const maxDuration = 120;
+
+const paywall = (reason: PaywallReason) =>
+  NextResponse.json<ApiError>({ error: PAYWALL_COPY[reason], code: "PAYWALL", reason }, { status: 402 });
 
 const fail = (status: number, error: string, code?: ApiError["code"]) =>
   NextResponse.json<ApiError>({ error, code }, { status });
@@ -40,6 +46,16 @@ export async function POST(req: Request) {
     throw err;
   }
   const context = parseUserContext(form.get("context"));
+
+  // Billing gate: sample documents are always free; own documents use the trial unless Pro.
+  const billing = readBilling(req);
+  const samples = await sampleHashes();
+  const ownDocs = pdfs.filter((p) => !samples.has(p.sha256)).length;
+  const demo = ownDocs === 0;
+  if (!billing.pro && !demo) {
+    if (billing.trial.audits >= FREE_TRIAL.audits) return paywall("trial_used");
+    if (ownDocs > FREE_TRIAL.maxFiles) return paywall("file_limit");
+  }
 
   let ai;
   try {
@@ -117,10 +133,15 @@ export async function POST(req: Request) {
       );
     }
 
-    return NextResponse.json<AnalyzeResponse>({
+    const res = NextResponse.json<AnalyzeResponse>({
       audit,
-      meta: { model, fileNames: pdfs.map((p) => p.name), durationMs: Date.now() - started },
+      meta: { model, fileNames: pdfs.map((p) => p.name), durationMs: Date.now() - started, demo },
     });
+    // Only a successful audit of the user's own documents consumes the free trial.
+    if (!billing.pro && !demo) {
+      res.headers.append("Set-Cookie", trialCookie({ ...billing.trial, audits: billing.trial.audits + 1 }));
+    }
+    return res;
   } catch (err) {
     console.error("[analyze] Gemini error:", geminiErrorDetail(err));
     const { status, message } = describeGeminiError(err);

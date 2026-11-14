@@ -18,7 +18,7 @@ export function Logo({ dark = false }: { dark?: boolean }) {
     <span className="flex items-center gap-2.5">
       <LogoMark />
       <span className={cn("text-lg font-extrabold tracking-tight", dark ? "text-white" : "text-ink")}>
-        Insur<span className="text-savings">a</span>
+        Insura<span className="text-savings">US</span>
       </span>
     </span>
   );

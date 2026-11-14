@@ -9,10 +9,12 @@ interface UploadZoneProps {
   files: File[];
   onChange: (files: File[]) => void;
   disabled?: boolean;
+  /** Max PDFs for the current plan (free trial: 2, Pro: 6). */
+  maxFiles?: number;
 }
 
 /** Drag & drop (or click/keyboard) PDF picker. Validates type, size and count client-side. */
-export function UploadZone({ files, onChange, disabled }: UploadZoneProps) {
+export function UploadZone({ files, onChange, disabled, maxFiles = MAX_FILES }: UploadZoneProps) {
   const inputId = useId();
   const inputRef = useRef<HTMLInputElement>(null);
   const [dragging, setDragging] = useState(false);
@@ -24,15 +26,15 @@ export function UploadZone({ files, onChange, disabled }: UploadZoneProps) {
       const pdfs = list.filter((f) => f.type === "application/pdf" || f.name.toLowerCase().endsWith(".pdf"));
       const tooBig = pdfs.filter((f) => f.size > MAX_FILE_BYTES);
       const ok = pdfs.filter((f) => f.size <= MAX_FILE_BYTES);
-      const merged = [...files.filter((f) => !ok.some((n) => n.name === f.name)), ...ok].slice(0, MAX_FILES);
+      const merged = [...files.filter((f) => !ok.some((n) => n.name === f.name)), ...ok].slice(0, maxFiles);
 
       if (pdfs.length < list.length) setWarning("Only PDF files are supported.");
       else if (tooBig.length) setWarning(`${tooBig[0].name} is over 10 MB.`);
-      else if (files.length + ok.length > MAX_FILES) setWarning(`Up to ${MAX_FILES} documents per audit.`);
+      else if (files.length + ok.length > maxFiles) setWarning(`Your plan audits up to ${maxFiles} PDFs at once.`);
       else setWarning(null);
       onChange(merged);
     },
-    [files, onChange],
+    [files, onChange, maxFiles],
   );
 
   return (
@@ -70,7 +72,7 @@ export function UploadZone({ files, onChange, disabled }: UploadZoneProps) {
             Drop your policy PDFs here, or <span className="underline underline-offset-4">browse</span>
           </span>
           <span className="mt-1.5 block text-base text-muted">
-            Auto, Health, Home or Renters · up to {MAX_FILES} PDFs, 10 MB each
+            Auto, Health, Home or Renters · up to {maxFiles} PDFs, 10 MB each
           </span>
         </span>
         <input

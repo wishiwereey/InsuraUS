@@ -22,6 +22,13 @@ const nonNeg = (v: unknown) => Math.max(0, money(v));
 const clamp = (n: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, n));
 const text = (v: unknown, fallback = "") => (typeof v === "string" && v.trim() ? v.trim() : fallback);
 
+/** Keep the headline scannable even if the model ignores the length rule: first sentence, no cents. */
+function conciseVerdict(v: string): string {
+  const noCents = v.replace(/(\$[\d,]+)\.\d{2}\b/g, "$1");
+  const first = noCents.match(/^.*?[.!?](\s|$)/)?.[0]?.trim() ?? noCents;
+  return first.length > 220 ? `${first.slice(0, 217).trimEnd()}…` : first;
+}
+
 const SEVERITY_RANK: Record<IssueSeverity, number> = { high: 0, medium: 1, low: 2 };
 
 function normalizeIssue(raw: Partial<PolicyIssue>): PolicyIssue {
@@ -114,7 +121,7 @@ export function normalizeAudit(raw: Partial<AuditResult>): AuditResult {
     scoreFactors,
     totalCurrentAnnualSpend: policies.length ? currentTotal : nonNeg(raw.totalCurrentAnnualSpend),
     totalPotentialAnnualSavings: policies.length ? currentTotal - optimizedTotal : money(raw.totalPotentialAnnualSavings),
-    summaryVerdict: text(raw.summaryVerdict, "Analysis complete."),
+    summaryVerdict: conciseVerdict(text(raw.summaryVerdict, "Analysis complete.")),
     policies,
     whatIfScenarios: (raw.whatIfScenarios ?? []).slice(0, 3).map((s) => normalizeScenario(s, currentTotal, optimizedTotal)),
     negotiationScript: {

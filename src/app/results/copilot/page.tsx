@@ -18,7 +18,7 @@ export default function CopilotPage() {
       />
       <div className="grid gap-6 lg:grid-cols-[1fr_320px]">
         {files.length ? (
-          <PolicyChat files={files} context={context} audit={result.audit} />
+          <PolicyChat files={files} context={context} audit={result.audit} demo={!!result.meta.demo} />
         ) : (
           <div className="rounded-3xl border border-dashed border-line-strong p-10 text-center text-lg text-muted">
             Your original PDFs aren&apos;t available in this browser anymore. Re-run the audit to chat about them.

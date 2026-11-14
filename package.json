@@ -1,8 +1,8 @@
 {
-  "name": "insura",
+  "name": "insuraus",
   "version": "1.0.0",
   "private": true,
-  "description": "Insura — AI insurance policy auditor & optimizer for US households",
+  "description": "InsuraUS — AI insurance policy auditor & optimizer for US households",
   "scripts": {
     "dev": "next dev",
     "build": "next build",

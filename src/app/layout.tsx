@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans } from "next/font/google";
 import Link from "next/link";
 import { AuditProvider } from "@/components/providers/AuditProvider";
+import { BillingProvider } from "@/components/providers/BillingProvider";
 import { Logo } from "@/components/site/Logo";
 import { SiteHeader } from "@/components/site/SiteHeader";
 import "./globals.css";
@@ -9,11 +10,11 @@ import "./globals.css";
 const jakarta = Plus_Jakarta_Sans({ subsets: ["latin"], variable: "--font-jakarta", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "Insura — AI Insurance Audit", template: "%s · Insura" },
+  title: { default: "InsuraUS — AI Insurance Audit", template: "%s · InsuraUS" },
   description:
     "See through your insurance. Upload auto, health and home policy PDFs and get an instant AI audit: hidden overpayments, duplicate coverage, a claim stress test and a negotiation script.",
   openGraph: {
-    title: "Insura — See through your insurance",
+    title: "InsuraUS — See through your insurance",
     description: "Instant AI audit of your auto, health and home insurance policies.",
     type: "website",
   },
@@ -25,6 +26,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en" className={jakarta.variable}>
       <body className="flex min-h-dvh flex-col">
+        <BillingProvider>
         <AuditProvider>
           <SiteHeader />
           <main className="flex-1">{children}</main>
@@ -41,11 +43,14 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                 <Link href="/audit" className="hover:text-ink">Start an audit</Link>
                 <Link href="/samples" className="hover:text-ink">Sample policies</Link>
                 <Link href="/results" className="hover:text-ink">My results</Link>
+                <Link href="/pricing" className="hover:text-ink">Pricing</Link>
+                <Link href="/account" className="hover:text-ink">Account</Link>
                 <Link href="/#how-it-works" className="hover:text-ink">How it works</Link>
               </nav>
             </div>
           </footer>
         </AuditProvider>
+        </BillingProvider>
       </body>
     </html>
   );

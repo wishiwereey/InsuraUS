@@ -26,7 +26,7 @@ export function ResultsShell({ children }: { children: React.ReactNode }) {
         <FileStack className="mx-auto size-12 text-subtle" />
         <h1 className="mt-5 text-4xl font-extrabold text-ink">No report yet</h1>
         <p className="mx-auto mt-3 max-w-lg text-lg text-muted">
-          Upload your policies or run a sample household to generate your Insura report.
+          Upload your policies or run a sample household to generate your InsuraUS report.
         </p>
         <Link
           href="/audit"
@@ -64,9 +64,18 @@ export function ResultsShell({ children }: { children: React.ReactNode }) {
           <div className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
             <div className="max-w-3xl">
               <p className="text-sm font-bold tracking-widest text-scan uppercase">
-                Your Insura report · {audit.policies.length} policies · {findings} findings
+                Your InsuraUS report · {audit.policies.length} policies · {findings} findings
               </p>
-              <p className="mt-4 text-xl leading-snug font-semibold text-white sm:text-2xl">{audit.summaryVerdict}</p>
+              <h1 className="mt-3 text-3xl leading-tight font-extrabold text-white sm:text-4xl">
+                {savings > 0 ? (
+                  <>
+                    You&apos;re overpaying <span className="money text-scan">~{formatUSD(savings)}</span> a year
+                  </>
+                ) : (
+                  "Your coverage is well tuned"
+                )}
+              </h1>
+              <p className="mt-3 max-w-2xl text-lg leading-relaxed text-slate-300">{audit.summaryVerdict}</p>
             </div>
             <div className="grid shrink-0 grid-cols-2 gap-3 sm:grid-cols-3 lg:w-[520px]">
               <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4">
@@ -87,7 +96,9 @@ export function ResultsShell({ children }: { children: React.ReactNode }) {
             </div>
           </div>
           <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-slate-400">
-            <span className="truncate">Analyzed: {meta.fileNames.join(" · ")}</span>
+            <span title={meta.fileNames.join("\n")}>
+              {meta.fileNames.length} {meta.fileNames.length === 1 ? "document" : "documents"} analyzed
+            </span>
             <button onClick={reset} className="inline-flex items-center gap-1.5 font-semibold text-slate-200 hover:text-white">
               <RotateCcw className="size-4" /> Start a new audit
             </button>

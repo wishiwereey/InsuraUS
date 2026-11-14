@@ -5,6 +5,8 @@ import { Fragment, useEffect, useRef, useState } from "react";
 import type { AuditResult, ChatMessage, UserContext } from "@/types/insurance";
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
+import Link from "next/link";
+import { useBilling } from "@/components/providers/BillingProvider";
 
 /** Minimal, safe markdown: **bold**, bullet lists and paragraphs. No HTML injection. */
 function RichText({ text }: { text: string }) {
@@ -62,12 +64,18 @@ interface PolicyChatProps {
   files: File[];
   context: UserContext;
   audit: AuditResult;
+  /** Demo (sample) documents are never metered. */
+  demo?: boolean;
 }
 
-export function PolicyChat({ files, context, audit }: PolicyChatProps) {
+export function PolicyChat({ files, context, audit, demo = false }: PolicyChatProps) {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
+  const [limited, setLimited] = useState(false);
+  const billing = useBilling();
+  const metered = !demo && !billing.isPro;
+  const left = billing.status?.trialChatsLeft ?? null;
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -95,6 +103,7 @@ export function PolicyChat({ files, context, audit }: PolicyChatProps) {
       const res = await fetch("/api/chat", { method: "POST", body: form });
       if (!res.ok || !res.body) {
         const err = await res.json().catch(() => ({ error: "Something went wrong." }));
+        if (res.status === 402) setLimited(true);
         write(`⚠️ ${err.error ?? "Something went wrong."}`);
         return;
       }
@@ -112,6 +121,7 @@ export function PolicyChat({ files, context, audit }: PolicyChatProps) {
       write("⚠️ Network error — please try again.");
     } finally {
       setBusy(false);
+      if (metered) void billing.refresh();
     }
   }
 
@@ -124,6 +134,14 @@ export function PolicyChat({ files, context, audit }: PolicyChatProps) {
         <div>
           <p className="text-sm font-semibold text-ink">Policy Copilot</p>
           <p className="text-xs text-muted">Answers grounded in your {files.length} uploaded {files.length === 1 ? "document" : "documents"}</p>
+          {metered && left !== null && (
+            <p className="mt-0.5 text-xs font-semibold text-info">
+              {left} free {left === 1 ? "question" : "questions"} left ·{" "}
+              <Link href="/pricing" className="underline-offset-2 hover:underline">
+                Pro is unlimited
+              </Link>
+            </p>
+          )}
         </div>
       </div>
 
@@ -171,6 +189,14 @@ export function PolicyChat({ files, context, audit }: PolicyChatProps) {
         ))}
       </div>
 
+      {limited && metered && (
+        <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-info-soft px-5 py-3 text-base text-ink">
+          <span>You&apos;ve used your free Copilot questions.</span>
+          <Link href="/checkout" className="rounded-lg bg-ink px-4 py-2 text-sm font-bold text-white hover:bg-ink-soft">
+            Upgrade · $12/mo
+          </Link>
+        </div>
+      )}
       <form
         onSubmit={(e) => {
           e.preventDefault();

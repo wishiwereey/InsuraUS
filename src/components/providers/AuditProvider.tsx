@@ -6,6 +6,8 @@ import type { AnalyzeResponse, ApiError, UserContext } from "@/types/insurance";
 import type { DemoPreset } from "@/lib/presets";
 import { SAMPLE_DOCS } from "@/lib/samples-meta";
 import { clearAudit, loadAudit, loadFiles, saveAudit, saveFiles } from "@/lib/storage";
+import type { PaywallReason } from "@/lib/billing/plans";
+import { useBilling } from "./BillingProvider";
 
 export type AuditStatus = "idle" | "analyzing" | "done" | "error";
 
@@ -15,6 +17,8 @@ interface AuditState {
   context: UserContext;
   result: AnalyzeResponse | null;
   error: string | null;
+  /** Set when the server refused the audit because of plan limits. */
+  paywall: PaywallReason | null;
   /** True once we've tried to restore a previous audit from storage. */
   hydrated: boolean;
   activePreset: string | null;
@@ -56,6 +60,8 @@ export function AuditProvider({ children }: { children: React.ReactNode }) {
   const [context, setContext] = useState<UserContext>({});
   const [result, setResult] = useState<AnalyzeResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [paywall, setPaywall] = useState<PaywallReason | null>(null);
+  const billing = useBilling();
   const [hydrated, setHydrated] = useState(false);
   const [activePreset, setActivePreset] = useState<string | null>(null);
   const runId = useRef(0);
@@ -81,6 +87,7 @@ export function AuditProvider({ children }: { children: React.ReactNode }) {
       if (useFiles.length === 0) return;
       const id = ++runId.current;
       setError(null);
+      setPaywall(null);
       setStatus("analyzing");
       if (pathname !== "/audit") router.push("/audit");
       window.scrollTo({ top: 0, behavior: "smooth" });
@@ -93,12 +100,21 @@ export function AuditProvider({ children }: { children: React.ReactNode }) {
         const body = (await res.json().catch(() => ({ error: `The server returned an unexpected response (${res.status}).` }))) as
           | AnalyzeResponse
           | ApiError;
-        if (!res.ok || "error" in body) throw new Error("error" in body ? body.error : `Request failed (${res.status}).`);
+        if (!res.ok || "error" in body) {
+          if ("code" in body && body.code === "PAYWALL" && body.reason && id === runId.current) {
+            setPaywall(body.reason);
+            setStatus("error");
+            setError(body.error);
+            return;
+          }
+          throw new Error("error" in body ? body.error : `Request failed (${res.status}).`);
+        }
         if (id !== runId.current) return; // superseded by a newer run / reset
         setResult(body);
         setStatus("done");
         saveAudit({ result: body, context: useCtx });
         void saveFiles(useFiles);
+        void billing.refresh();
         router.push("/results");
       } catch (err) {
         if (id !== runId.current) return;
@@ -108,7 +124,7 @@ export function AuditProvider({ children }: { children: React.ReactNode }) {
         if (id === runId.current) setActivePreset(null);
       }
     },
-    [files, context, pathname, router],
+    [files, context, pathname, router, billing],
   );
 
   const runPreset = useCallback(
@@ -135,14 +151,15 @@ export function AuditProvider({ children }: { children: React.ReactNode }) {
     setResult(null);
     setFiles([]);
     setError(null);
+    setPaywall(null);
     setActivePreset(null);
     clearAudit();
     router.push("/audit");
   }, [router]);
 
   const value = useMemo<AuditState>(
-    () => ({ status, files, context, result, error, hydrated, activePreset, setFiles, setContext, runAudit, runPreset, reset }),
-    [status, files, context, result, error, hydrated, activePreset, runAudit, runPreset, reset],
+    () => ({ status, files, context, result, error, paywall, hydrated, activePreset, setFiles, setContext, runAudit, runPreset, reset }),
+    [status, files, context, result, error, paywall, hydrated, activePreset, runAudit, runPreset, reset],
   );
 
   return <AuditContext.Provider value={value}>{children}</AuditContext.Provider>;

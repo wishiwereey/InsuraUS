@@ -10,8 +10,8 @@ import type { AnalyzeResponse, UserContext } from "@/types/insurance";
  * storage can be unavailable (private mode, blocked site data).
  */
 
-const SESSION_KEY = "insura:audit:v1";
-const DB_NAME = "insura";
+const SESSION_KEY = "insuraus:audit:v1";
+const DB_NAME = "insuraus";
 const STORE = "files";
 
 export interface PersistedAudit {

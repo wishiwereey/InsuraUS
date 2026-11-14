@@ -4,6 +4,9 @@ import { GEMINI_FALLBACK_MODEL, GEMINI_MODEL, describeGeminiError, geminiErrorDe
 import { CHAT_SYSTEM_PROMPT, auditDigest, formatUserContext } from "@/lib/gemini/prompts";
 import { RequestValidationError, parseUserContext, readPdfUploads } from "@/lib/request";
 import type { ApiError, AuditResult, ChatMessage } from "@/types/insurance";
+import { FREE_TRIAL, PAYWALL_COPY } from "@/lib/billing/plans";
+import { sampleHashes } from "@/lib/billing/samples";
+import { readBilling, trialCookie } from "@/lib/billing/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -64,6 +67,17 @@ export async function POST(req: Request) {
     throw err;
   }
   const context = parseUserContext(form.get("context"));
+
+  // Billing gate: free Copilot questions on the user's own documents are limited; demo docs are unlimited.
+  const billing = readBilling(req);
+  const samples = await sampleHashes();
+  const metered = !billing.pro && pdfs.some((p) => !samples.has(p.sha256));
+  if (metered && billing.trial.chats >= FREE_TRIAL.chatQuestions) {
+    return NextResponse.json<ApiError>(
+      { error: PAYWALL_COPY.chat_limit, code: "PAYWALL", reason: "chat_limit" },
+      { status: 402 },
+    );
+  }
   const audit = parseAudit(form.get("audit"));
 
   let ai;
@@ -128,6 +142,11 @@ export async function POST(req: Request) {
   });
 
   return new Response(body, {
-    headers: { "Content-Type": "text/plain; charset=utf-8", "Cache-Control": "no-store", "X-Accel-Buffering": "no" },
+    headers: {
+      "Content-Type": "text/plain; charset=utf-8",
+      "Cache-Control": "no-store",
+      "X-Accel-Buffering": "no",
+      ...(metered ? { "Set-Cookie": trialCookie({ ...billing.trial, chats: billing.trial.chats + 1 }) } : {}),
+    },
   });
 }

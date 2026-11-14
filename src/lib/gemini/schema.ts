@@ -45,11 +45,11 @@ const issue: Schema = {
       ],
     },
     severity: { type: Type.STRING, format: "enum", enum: ["high", "medium", "low"] },
-    explanation: str("2–3 plain-English sentences citing the exact numbers from the document."),
+    explanation: str("Max 2 short plain-English sentences citing the exact numbers from the document."),
     annualSavings: num(
       "Estimated annual USD saved by fixing this. Use a NEGATIVE number when the fix costs money (e.g. raising liability limits).",
     ),
-    actionItem: str("A concrete, imperative next step (who to call / what to ask for / what form)."),
+    actionItem: str("ONE short imperative sentence: who to call and what to ask for."),
   },
   required: ["title", "category", "severity", "explanation", "annualSavings", "actionItem"],
   propertyOrdering: ["title", "category", "severity", "explanation", "annualSavings", "actionItem"],
@@ -160,7 +160,7 @@ export const auditResponseSchema: Schema = {
     insuranceHealthScore: { type: Type.INTEGER, description: "0–100 overall score; roughly the average of scoreFactors." },
     totalCurrentAnnualSpend: num("Sum of currentAnnualPremium across policies."),
     totalPotentialAnnualSavings: num("Sum of positive issue annualSavings net of any recommended extra spend."),
-    summaryVerdict: str("Exactly 2 plain-English sentences: the headline finding and the single most valuable action."),
+    summaryVerdict: str("ONE sentence, max 20 words, whole dollars: the single most valuable action and what it saves."),
     negotiationScript: {
       type: Type.OBJECT,
       properties: {

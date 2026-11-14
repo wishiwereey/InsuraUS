@@ -1,3 +1,4 @@
+import { createHash } from "node:crypto";
 import { US_STATES, type UserContext } from "@/types/insurance";
 import { MAX_FILES, MAX_FILE_BYTES, MAX_TOTAL_BYTES } from "./request-limits";
 
@@ -13,6 +14,8 @@ export class RequestValidationError extends Error {
 export interface PdfPayload {
   name: string;
   base64: string;
+  /** SHA-256 of the raw bytes — used to recognize free demo documents. */
+  sha256: string;
 }
 
 /** Read, validate and base64-encode PDF uploads from multipart form data. */
@@ -34,7 +37,7 @@ export async function readPdfUploads(form: FormData, field = "files"): Promise<P
     if (buf.subarray(0, 5).toString("latin1") !== "%PDF-") {
       throw new RequestValidationError(`"${file.name}" is not a valid PDF file.`);
     }
-    out.push({ name: file.name, base64: buf.toString("base64") });
+    out.push({ name: file.name, base64: buf.toString("base64"), sha256: createHash("sha256").update(buf).digest("hex") });
   }
   return out;
 }

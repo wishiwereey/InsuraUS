@@ -1,8 +1,8 @@
-# Insura — AI Insurance Policy Auditor & Optimizer
+# InsuraUS — AI Insurance Policy Auditor & Optimizer
 
 > **Stop silently overpaying for insurance you don't understand.**
 
-Insura reads your real insurance PDFs (auto, health, home, renters) and returns an audit in under a minute:
+InsuraUS reads your real insurance PDFs (auto, health, home, renters) and returns an audit in under a minute:
 
 - an **Insurance Health Score**
 - hidden overpayments and duplicate coverage, each with a dollar estimate
@@ -26,7 +26,7 @@ first page of the declarations. Common leaks include:
 | Rich PPO or Platinum plan for a household that sees a doctor twice a year | $800–$2,000/yr |
 | Missed bundle, alarm, low-mileage and defensive-driving discounts | $150–$500/yr |
 
-Brokers are paid by commission, so they have little reason to point these out. Insura acts as an independent, educational
+Brokers are paid by commission, so they have little reason to point these out. InsuraUS acts as an independent, educational
 fiduciary.
 
 ## Try it in 30 seconds
@@ -57,10 +57,37 @@ work them out on its own.
 | `/results/negotiate` | Email + phone script, copy / open-in-mail, pre-call checklist |
 | `/results/copilot` | Streaming chat grounded in the uploaded PDFs |
 | `/samples` | Preview, download or audit the six generated sample PDFs |
+| `/pricing` | Free trial vs Pro ($12/mo), comparison table, FAQ |
+| `/checkout` | Test-mode checkout (test cards only, nothing is charged) |
+| `/account` | Plan, renewal, invoice, cancel, reset demo billing |
 
 The audit lives in a React context (`AuditProvider`) in the root layout, so it survives navigation between pages. The
 report JSON is kept in `sessionStorage` and the PDFs in IndexedDB, so a page refresh doesn't lose it. Nothing leaves the
 browser except the requests to the app's own API.
+
+## Business model (prototype billing)
+
+| Plan | Price | Includes |
+| --- | --- | --- |
+| Free trial | $0 | 1 audit of your own policies, up to 2 PDFs, 5 Copilot questions |
+| Pro | $12 / month | Unlimited audits, up to 6 PDFs per audit, unlimited Copilot |
+
+The sample households are always free and never count against the trial. The server recognizes them by SHA-256, because
+sample generation is deterministic.
+
+How it works without accounts or a database:
+- Plan state is kept in two **HMAC-signed, httpOnly cookies**: `insuraus_pro` and `insuraus_trial`. The server enforces
+  every limit in `/api/analyze` and `/api/chat` and returns `402 PAYWALL` when one is hit. Editing a cookie can't grant
+  Pro, because the signature check fails.
+- `/checkout` runs in **test mode only**. It accepts only the test cards `4242 4242 4242 4242` and
+  `5555 5555 5555 4444`. The full card number never leaves the browser; the server receives only the last 4 digits and the
+  brand.
+- `/account` shows the plan, renewal date and invoice, and can cancel. "Reset demo billing" returns to a fresh trial,
+  which helps when demoing the paywall.
+- Going live would mean swapping `/api/billing/checkout` for a Stripe Checkout Session plus webhook, and moving plan state
+  onto user accounts. Clearing cookies currently resets the trial, which is acceptable for a prototype.
+
+Set `BILLING_SECRET` to a long random string in production. Without it, a secret is derived from `GEMINI_API_KEY`.
 
 ## Architecture
 
@@ -121,11 +148,11 @@ Lucide icons · Recharts · pdf-lib · `@google/genai` (`gemini-2.5-flash`).
 Requires **Node 20+**.
 
 ```bash
-git clone <your-repo-url> insura
+git clone <your-repo-url> insuraus
 ```
 
 ```bash
-cd insura
+cd insuraus
 ```
 
 ```bash
@@ -157,6 +184,7 @@ Open http://localhost:3000.
 | --- | --- | --- |
 | `GEMINI_API_KEY` | ✅ | Google AI Studio key, used only on the server |
 | `GEMINI_MODEL` | – | Overrides the model (default `gemini-2.5-flash`) |
+| `BILLING_SECRET` | – | Signs the plan cookies. Set it in production |
 
 ### Deploying to Vercel
 
@@ -201,5 +229,5 @@ src/
 
 ## Disclaimer
 
-Insura is an educational tool. It is not a licensed insurance agent or broker and receives no commissions. Savings are
+InsuraUS is an educational tool. It is not a licensed insurance agent or broker and receives no commissions. Savings are
 estimates; confirm changes with your carrier in writing. All sample carriers, people, VINs and policy numbers are fictional.
