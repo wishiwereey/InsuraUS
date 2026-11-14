@@ -19,8 +19,8 @@ import { readBilling, trialCookie } from "@/lib/billing/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// Multi-document audits with reasoning typically take 15–45 s.
-export const maxDuration = 120;
+// Multi-document audits typically take 15–45 s; 60 s fits every Vercel plan.
+export const maxDuration = 60;
 
 const paywall = (reason: PaywallReason) =>
   NextResponse.json<ApiError>({ error: PAYWALL_COPY[reason], code: "PAYWALL", reason }, { status: 402 });
