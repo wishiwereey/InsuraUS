@@ -19,8 +19,9 @@ import { readBilling, trialCookie } from "@/lib/billing/server";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
-// Multi-document audits typically take 15–45 s; 60 s fits every Vercel plan.
-export const maxDuration = 60;
+// A 3-policy audit usually takes 20–60 s and can exceed 60 s under load.
+// 300 s is the Hobby-plan maximum with Vercel Fluid Compute (on by default for new projects).
+export const maxDuration = 300;
 
 const paywall = (reason: PaywallReason) =>
   NextResponse.json<ApiError>({ error: PAYWALL_COPY[reason], code: "PAYWALL", reason }, { status: 402 });
@@ -89,7 +90,8 @@ export async function POST(req: Request) {
         responseMimeType: "application/json",
         ...(strict ? { responseSchema: auditResponseSchema } : {}),
         temperature: 0.2,
-        thinkingConfig: { thinkingBudget: 4096 },
+        // Enough reasoning for the audit; larger budgets mostly add latency.
+        thinkingConfig: { thinkingBudget: 1024 },
       },
     });
 

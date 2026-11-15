@@ -97,7 +97,12 @@ export function AuditProvider({ children }: { children: React.ReactNode }) {
         useFiles.forEach((f) => form.append("files", f));
         form.append("context", JSON.stringify(useCtx));
         const res = await fetch("/api/analyze", { method: "POST", body: form });
-        const body = (await res.json().catch(() => ({ error: `The server returned an unexpected response (${res.status}).` }))) as
+        const body = (await res.json().catch(() => ({
+          error:
+            res.status === 504
+              ? "The analysis took longer than the server allows. Please try again, or audit fewer PDFs at once."
+              : `The server returned an unexpected response (${res.status}).`,
+        }))) as
           | AnalyzeResponse
           | ApiError;
         if (!res.ok || "error" in body) {
