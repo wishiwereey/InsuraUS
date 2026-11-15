@@ -1,7 +1,7 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { FREE_TRIAL, PRO_LIMITS, type BillingStatus } from "@/lib/billing/plans";
+import { FREE_TRIAL, PRO_LIMITS, type BillingInterval, type BillingStatus } from "@/lib/billing/plans";
 
 interface BillingState {
   status: BillingStatus | null;
@@ -9,7 +9,7 @@ interface BillingState {
   /** Max PDFs of the user's own the uploader accepts on the current plan. */
   maxFiles: number;
   refresh: () => Promise<void>;
-  checkout: (card: { last4: string; brand: "Visa" | "Mastercard" }) => Promise<void>;
+  checkout: (card: { last4: string; brand: "Visa" | "Mastercard"; interval: BillingInterval }) => Promise<void>;
   cancel: () => Promise<void>;
   resetDemo: () => Promise<void>;
 }
@@ -45,7 +45,7 @@ export function BillingProvider({ children }: { children: React.ReactNode }) {
     void refresh();
   }, [refresh]);
 
-  const checkout = useCallback(async (card: { last4: string; brand: "Visa" | "Mastercard" }) => {
+  const checkout = useCallback(async (card: { last4: string; brand: "Visa" | "Mastercard"; interval: BillingInterval }) => {
     setStatus(
       await call("/api/billing/checkout", {
         method: "POST",

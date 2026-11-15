@@ -5,13 +5,15 @@ import Link from "next/link";
 import { useState } from "react";
 import { UpgradeCard } from "@/components/billing/UpgradeCard";
 import { useBilling } from "@/components/providers/BillingProvider";
-import { FREE_TRIAL, PRO_PRICE_USD } from "@/lib/billing/plans";
+import { FREE_TRIAL, PRICES, formatPrice } from "@/lib/billing/plans";
 
 const fmt = (iso: string) => new Date(iso).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
 
 export default function AccountPage() {
   const { status, isPro, cancel, resetDemo } = useBilling();
   const [busy, setBusy] = useState<"cancel" | "reset" | null>(null);
+  const interval = status?.pro?.interval ?? "month";
+  const charged = status?.pro?.amount ?? PRICES[interval].amount;
 
   if (!status) {
     return (
@@ -41,7 +43,7 @@ export default function AccountPage() {
             <p className="text-sm font-semibold text-muted">Current plan</p>
             <p className="mt-1 flex items-center gap-2 text-2xl font-extrabold text-ink">
               {isPro ? <Crown className="size-6 text-savings" /> : <Gift className="size-6 text-muted" />}
-              {isPro ? `Pro · $${PRO_PRICE_USD}/month` : "Free trial"}
+              {isPro ? `Pro · ${formatPrice(charged)}/${interval === "year" ? "year" : "month"}` : "Free trial"}
             </p>
           </div>
           {isPro && status.pro && (
@@ -109,7 +111,7 @@ export default function AccountPage() {
                 <tr className="border-t border-line">
                   <td className="money py-3 font-semibold text-ink">{status.pro.invoiceId}</td>
                   <td className="py-3 text-ink-soft">{fmt(status.pro.since)}</td>
-                  <td className="money py-3 text-ink-soft">${PRO_PRICE_USD}.00</td>
+                  <td className="money py-3 text-ink-soft">{formatPrice(charged)}</td>
                   <td className="py-3">
                     <span className="rounded-full bg-warn-soft px-2.5 py-1 text-sm font-semibold text-warn-strong">Paid · test mode</span>
                   </td>

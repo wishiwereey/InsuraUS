@@ -2,8 +2,18 @@
 
 import { ArrowRight, Check, Crown, Gift, Minus } from "lucide-react";
 import Link from "next/link";
+import { useState } from "react";
 import { useBilling } from "@/components/providers/BillingProvider";
-import { FREE_TRIAL, PRO_LIMITS, PRO_PRICE_USD } from "@/lib/billing/plans";
+import {
+  ANNUAL_SAVINGS_PCT,
+  ANNUAL_SAVINGS_USD,
+  FREE_TRIAL,
+  PRICES,
+  PRO_LIMITS,
+  formatPrice,
+  type BillingInterval,
+} from "@/lib/billing/plans";
+import { cn } from "@/lib/utils";
 
 const ROWS: [string, string, string][] = [
   ["Audits of your own policies", `${FREE_TRIAL.audits} free audit`, "Unlimited"],
@@ -19,8 +29,12 @@ const FAQ = [
     "We never take money from insurers or a cut of the policy you switch to. A flat fee means our only incentive is to find you the best deal.",
   ],
   [
-    "Is $12 a month worth it?",
-    "Pro costs $144 a year. A single fix — a duplicate add-on, a deductible that's too low, the wrong health plan — often saves more than that, and households commonly overpay by hundreds or even thousands a year. Losing $12 a month beats silently losing hundreds. Your free audit shows your exact number first.",
+    "Is Pro worth it?",
+    "Yearly Pro costs $89.99 — about $7.50 a month. A single fix — a duplicate add-on, a deductible that's too low, the wrong health plan — often saves more than that, and households commonly overpay by hundreds or even thousands a year. Paying $7.50 a month beats silently losing hundreds. Your free audit shows your exact number first.",
+  ],
+  [
+    "Monthly or yearly?",
+    "Insurance renews once a year, so yearly fits how you actually use it: audit every renewal and open enrollment, for $89.99 instead of $144. Prefer flexibility? Monthly is $12 and you can cancel anytime.",
   ],
   ["Can I cancel?", "Anytime, in one click from your Account page. No calls, no emails. See the Terms page for the full subscription policy."],
   [
@@ -31,6 +45,8 @@ const FAQ = [
 
 export default function PricingPage() {
   const { status, isPro } = useBilling();
+  const [interval, setBillingInterval] = useState<BillingInterval>("year");
+  const price = PRICES[interval];
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
@@ -40,6 +56,31 @@ export default function PricingPage() {
         <p className="mt-4 text-lg text-muted">
           One free audit shows exactly how much you could save. Upgrade when you want to audit everything.
         </p>
+        <div className="mt-8 inline-flex rounded-full border border-line bg-surface p-1 shadow-card" role="group" aria-label="Billing period">
+          {(["month", "year"] as const).map((id) => (
+            <button
+              key={id}
+              onClick={() => setBillingInterval(id)}
+              aria-pressed={interval === id}
+              className={cn(
+                "flex items-center gap-2 rounded-full px-5 py-2.5 text-base font-bold transition",
+                interval === id ? "bg-ink text-white" : "text-muted hover:text-ink",
+              )}
+            >
+              {PRICES[id].label}
+              {id === "year" && (
+                <span
+                  className={cn(
+                    "rounded-full px-2 py-0.5 text-xs font-bold",
+                    interval === id ? "bg-scan text-night" : "bg-savings-soft text-savings-strong",
+                  )}
+                >
+                  −{ANNUAL_SAVINGS_PCT}%
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div className="mt-12 grid gap-6 md:grid-cols-2">
@@ -74,12 +115,36 @@ export default function PricingPage() {
               <span className="inline-flex items-center gap-2 rounded-full bg-scan/15 px-3 py-1 text-sm font-bold text-scan">
                 <Crown className="size-4" /> Pro
               </span>
-              <span className="rounded-full bg-white/10 px-3 py-1 text-sm font-semibold text-slate-200">Most popular</span>
+              <span className="rounded-full bg-white/10 px-3 py-1 text-sm font-semibold text-slate-200">
+                {interval === "year" ? "Best value" : "Most flexible"}
+              </span>
             </div>
-            <p className="mt-5">
-              <span className="money text-5xl font-extrabold">${PRO_PRICE_USD}</span>
-              <span className="text-lg text-slate-400"> / month</span>
-            </p>
+            {interval === "year" ? (
+              <>
+                <p className="mt-5">
+                  <span className="money text-5xl font-extrabold">{formatPrice(price.perMonth)}</span>
+                  <span className="text-lg text-slate-400"> / month</span>
+                </p>
+                <p className="money mt-2 text-base text-slate-300">
+                  <span className="text-slate-500 line-through">{formatPrice(PRICES.month.amount * 12)}</span>{" "}
+                  <span className="font-bold text-white">{formatPrice(price.amount)} billed yearly</span> · you save{" "}
+                  {formatPrice(ANNUAL_SAVINGS_USD)}
+                </p>
+              </>
+            ) : (
+              <>
+                <p className="mt-5">
+                  <span className="money text-5xl font-extrabold">{formatPrice(price.amount)}</span>
+                  <span className="text-lg text-slate-400"> / month</span>
+                </p>
+                <button
+                  onClick={() => setBillingInterval("year")}
+                  className="money mt-2 text-left text-base font-semibold text-scan underline-offset-4 hover:underline"
+                >
+                  Or {formatPrice(PRICES.year.perMonth)}/mo billed yearly — save {ANNUAL_SAVINGS_PCT}%
+                </button>
+              </>
+            )}
             <p className="mt-2 text-base text-slate-300">For households with several policies and yearly renewals.</p>
             <ul className="mt-6 space-y-3 text-base text-slate-200">
               <li className="flex gap-2"><Check className="mt-1 size-5 shrink-0 text-scan" /> Unlimited audits</li>
@@ -88,7 +153,7 @@ export default function PricingPage() {
               <li className="flex gap-2"><Check className="mt-1 size-5 shrink-0 text-scan" /> Cancel anytime</li>
             </ul>
             <Link
-              href={isPro ? "/account" : "/checkout"}
+              href={isPro ? "/account" : `/checkout?interval=${interval}`}
               className="mt-auto inline-flex items-center justify-center gap-2 rounded-xl bg-scan px-6 py-3.5 text-base font-bold text-night transition hover:bg-white sm:mt-8"
             >
               {isPro ? "Manage subscription" : "Upgrade to Pro"} <ArrowRight className="size-5" />
@@ -107,7 +172,7 @@ export default function PricingPage() {
         <p className="text-center text-2xl font-extrabold text-muted">vs</p>
         <div className="text-center md:text-right">
           <p className="text-sm font-bold tracking-widest text-savings-strong uppercase">InsuraUS Pro</p>
-          <p className="money mt-1 text-4xl font-extrabold text-savings-strong">−$12/mo</p>
+          <p className="money mt-1 text-4xl font-extrabold text-savings-strong">−$7.50/mo</p>
           <p className="mt-1 text-base text-ink-soft">to find and fix them — and re-check at every renewal</p>
         </div>
       </div>

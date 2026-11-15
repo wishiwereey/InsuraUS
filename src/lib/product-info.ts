@@ -1,4 +1,4 @@
-import { FREE_TRIAL, PRO_LIMITS, PRO_PRICE_USD } from "@/lib/billing/plans";
+import { ANNUAL_SAVINGS_PCT, FREE_TRIAL, PRO_ANNUAL_PRICE_USD, PRO_LIMITS, PRO_PRICE_USD } from "@/lib/billing/plans";
 
 /**
  * Single source of truth for InsuraUS's own policies (plans, cancellation,
@@ -29,7 +29,7 @@ export const TERMS: TermsSection[] = [
     title: "Plans",
     points: [
       `Free trial: ${FREE_TRIAL.audits} audit of your own policies (up to ${FREE_TRIAL.maxFiles} PDFs) and ${FREE_TRIAL.chatQuestions} Copilot questions.`,
-      `Pro: $${PRO_PRICE_USD} per month — unlimited audits, up to ${PRO_LIMITS.maxFiles} PDFs per audit, unlimited Copilot questions.`,
+      `Pro: $${PRO_PRICE_USD} per month, or $${PRO_ANNUAL_PRICE_USD} per year (about $7.50 a month, ${ANNUAL_SAVINGS_PCT}% less) — unlimited audits, up to ${PRO_LIMITS.maxFiles} PDFs per audit, unlimited Copilot questions.`,
       "Sample household demos are always free and never use up your trial.",
     ],
   },
@@ -37,7 +37,7 @@ export const TERMS: TermsSection[] = [
     id: "billing",
     title: "Billing & renewal",
     points: [
-      `Pro is billed $${PRO_PRICE_USD} every month on the day you subscribed and renews automatically until you cancel.`,
+      `Monthly Pro is billed $${PRO_PRICE_USD} every month; yearly Pro is billed $${PRO_ANNUAL_PRICE_USD} once a year. Both renew automatically on the day you subscribed until you cancel.`,
       "Your renewal date and payment method are shown on the Account page.",
     ],
   },
@@ -46,7 +46,7 @@ export const TERMS: TermsSection[] = [
     title: "How to cancel",
     points: [
       "Go to Account (top-right badge or the footer link) and click “Cancel subscription”. No phone call or email needed.",
-      "You won't be charged again after you cancel. Pro features stop immediately in this prototype; in a production release they would last until the end of the paid month.",
+      "You won't be charged again after you cancel. Pro features stop immediately in this prototype; in a production release they would last until the end of the paid month or year.",
       "Your past reports stay in your browser after cancelling.",
     ],
   },

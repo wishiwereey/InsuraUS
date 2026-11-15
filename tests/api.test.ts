@@ -100,6 +100,28 @@ describe("billing endpoints", () => {
     expect(cancelled.headers.getSetCookie().join()).toMatch(/insuraus_pro=; .*Max-Age=0/);
   });
 
+  it("yearly checkout renews in a year at the server-side annual price", async () => {
+    const res = await checkout(post("/api/billing/checkout", { last4: "4242", brand: "Visa", interval: "year", amount: 0.01 }));
+    const body = await res.json();
+    expect(body.pro).toMatchObject({ interval: "year", amount: 89.99 }); // client-sent amount is ignored
+    const days = (new Date(body.pro.renewsAt).getTime() - new Date(body.pro.since).getTime()) / 864e5;
+    expect(days).toBeGreaterThanOrEqual(365);
+    expect(days).toBeLessThanOrEqual(366);
+  });
+
+  it("monthly is the default interval and renews in about a month", async () => {
+    const body = await (await checkout(post("/api/billing/checkout", { last4: "4242", brand: "Visa" }))).json();
+    expect(body.pro).toMatchObject({ interval: "month", amount: 12 });
+    const days = (new Date(body.pro.renewsAt).getTime() - new Date(body.pro.since).getTime()) / 864e5;
+    expect(days).toBeGreaterThanOrEqual(28);
+    expect(days).toBeLessThanOrEqual(31);
+  });
+
+  it("rejects an unknown billing interval", async () => {
+    const res = await checkout(post("/api/billing/checkout", { last4: "4242", brand: "Visa", interval: "lifetime" }));
+    expect(res.status).toBe(400);
+  });
+
   it("rejects checkout without valid test-card details", async () => {
     expect((await checkout(post("/api/billing/checkout", { last4: "42", brand: "Visa" }))).status).toBe(400);
     expect((await checkout(post("/api/billing/checkout", { last4: "4242", brand: "Amex" }))).status).toBe(400);

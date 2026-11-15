@@ -1,6 +1,6 @@
 import { ArrowRight, Check, Crown } from "lucide-react";
 import Link from "next/link";
-import { PRO_LIMITS, PRO_PRICE_USD } from "@/lib/billing/plans";
+import { PRICES, PRO_LIMITS, PRO_PRICE_USD, formatPrice } from "@/lib/billing/plans";
 import { cn } from "@/lib/utils";
 
 export const PRO_FEATURES = [
@@ -21,7 +21,8 @@ export function UpgradeCard({ message, className }: { message?: string; classNam
         </span>
         <h2 className="mt-4 text-2xl font-extrabold sm:text-3xl">{message ?? "Keep auditing with Pro"}</h2>
         <p className="mt-2 text-lg text-slate-300">
-          <span className="money text-3xl font-extrabold text-white">${PRO_PRICE_USD}</span> / month · cancel anytime
+          <span className="money text-3xl font-extrabold text-white">{formatPrice(PRICES.year.perMonth)}</span> / month billed
+          yearly · or {formatPrice(PRO_PRICE_USD)} monthly
         </p>
         <ul className="mt-5 grid gap-2 sm:grid-cols-2">
           {PRO_FEATURES.map((f) => (

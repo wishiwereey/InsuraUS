@@ -193,7 +193,7 @@ export function PolicyChat({ files, context, audit, demo = false }: PolicyChatPr
         <div className="flex flex-wrap items-center justify-between gap-3 border-t border-line bg-info-soft px-5 py-3 text-base text-ink">
           <span>You&apos;ve used your free Copilot questions.</span>
           <Link href="/checkout" className="rounded-lg bg-ink px-4 py-2 text-sm font-bold text-white hover:bg-ink-soft">
-            Upgrade · $12/mo
+            Upgrade · from $7.50/mo
           </Link>
         </div>
       )}

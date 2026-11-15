@@ -5,6 +5,7 @@ import { sampleHashes } from "@/lib/billing/samples";
 import { SAMPLE_DOCS, generateSamplePdf, type SampleId } from "@/lib/sample-pdfs";
 import { formatCompactUSD, formatSignedUSD, formatUSD, shortTitle } from "@/lib/utils";
 import { DEMO_PRESETS } from "@/lib/presets";
+import { ANNUAL_SAVINGS_PCT, ANNUAL_SAVINGS_USD, PRICES, formatPrice } from "@/lib/billing/plans";
 
 describe("finance — 5-year wealth impact", () => {
   it("matches the ordinary-annuity future value at 7%", () => {
@@ -22,6 +23,20 @@ describe("finance — 5-year wealth impact", () => {
     expect(s).toHaveLength(6);
     for (let i = 1; i < s.length; i++) expect(s[i].balance).toBeGreaterThan(s[i - 1].balance);
     expect(s[5].balance).toBeCloseTo(futureValueOfAnnualSavings(1858), 6);
+  });
+});
+
+describe("pricing", () => {
+  it("yearly Pro is $89.99 — about $7.50/mo and 37% less than paying monthly", () => {
+    expect(PRICES.year.amount).toBe(89.99);
+    expect(formatPrice(PRICES.year.perMonth)).toBe("$7.50");
+    expect(ANNUAL_SAVINGS_PCT).toBe(37);
+    expect(formatPrice(ANNUAL_SAVINGS_USD)).toBe("$54.01");
+  });
+
+  it("formats whole and fractional prices", () => {
+    expect(formatPrice(12)).toBe("$12");
+    expect(formatPrice(89.99)).toBe("$89.99");
   });
 });
 
