@@ -18,6 +18,7 @@ vi.mock("@/lib/gemini/client", async (importOriginal) => {
 const { POST: analyze } = await import("@/app/api/analyze/route");
 const { POST: chat } = await import("@/app/api/chat/route");
 const { describeGeminiError, geminiErrorDetail, isRequestShapeError } = await import("@/lib/gemini/client");
+const { clearAuditCache } = await import("@/lib/audit/cache");
 
 const modelAudit = {
   insuranceHealthScore: 58,
@@ -55,7 +56,9 @@ const apiError = (status: number, message: string) =>
 beforeEach(() => {
   generateContent.mockReset();
   generateContentStream.mockReset();
+  clearAuditCache();
   vi.stubEnv("BILLING_SECRET", "test-secret");
+  vi.stubEnv("GEMINI_RETRY_DELAY_MS", "0");
 });
 
 describe("POST /api/analyze with Gemini", () => {
@@ -102,8 +105,61 @@ describe("POST /api/analyze with Gemini", () => {
     const body = await res.json();
 
     expect(res.status).toBe(200);
-    expect(generateContent.mock.calls[1][0].model).toBe("gemini-flash-latest");
-    expect(body.meta.model).toBe("gemini-flash-latest");
+    expect(generateContent.mock.calls[1][0].model).toBe("gemini-2.5-flash-lite");
+    expect(body.meta.model).toBe("gemini-2.5-flash-lite");
+  });
+
+  it("switches to Flash-Lite (separate quota) when the main model is rate-limited (429)", async () => {
+    generateContent.mockRejectedValueOnce(apiError(429, "Resource has been exhausted")).mockResolvedValueOnce(ok(modelAudit));
+    const res = await analyze(post("/api/analyze", form([await sampleFile("miller-auto")])));
+
+    expect(res.status).toBe(200);
+    expect(generateContent.mock.calls.map((c) => c[0].model)).toEqual(["gemini-2.5-flash", "gemini-2.5-flash-lite"]);
+  });
+
+  it("retries the same model once when Gemini is overloaded (503)", async () => {
+    generateContent.mockRejectedValueOnce(apiError(503, "The model is overloaded")).mockResolvedValueOnce(ok(modelAudit));
+    const res = await analyze(post("/api/analyze", form([await sampleFile("miller-auto")])));
+
+    expect(res.status).toBe(200);
+    expect(generateContent.mock.calls.map((c) => c[0].model)).toEqual(["gemini-2.5-flash", "gemini-2.5-flash"]);
+  });
+
+  it("returns a friendly 429 only when every model is rate-limited", async () => {
+    generateContent.mockRejectedValue(apiError(429, "Resource has been exhausted"));
+    const res = await analyze(post("/api/analyze", form([await sampleFile("miller-auto")])));
+
+    expect(res.status).toBe(429);
+    expect((await res.json()).error).toMatch(/try again in about 30 seconds/);
+    expect(generateContent).toHaveBeenCalledTimes(3); // flash → flash-lite → flash-latest
+  });
+
+  it("serves identical documents from the cache without calling Gemini again", async () => {
+    generateContent.mockResolvedValueOnce(ok(modelAudit));
+    const first = await (await analyze(post("/api/analyze", form([await sampleFile("miller-auto")])))).json();
+    const second = await (await analyze(post("/api/analyze", form([await sampleFile("miller-auto")])))).json();
+
+    expect(generateContent).toHaveBeenCalledTimes(1);
+    expect(first.meta.cachedAt).toBeUndefined();
+    expect(second.meta.cachedAt).toEqual(expect.any(String));
+    expect(second.audit).toEqual(first.audit);
+  });
+
+  it("does not reuse a cached audit when the household context differs", async () => {
+    generateContent.mockResolvedValue(ok(modelAudit));
+    await analyze(post("/api/analyze", form([await sampleFile("miller-auto")], { context: JSON.stringify({ state: "TX" }) })));
+    await analyze(post("/api/analyze", form([await sampleFile("miller-auto")], { context: JSON.stringify({ state: "CA" }) })));
+
+    expect(generateContent).toHaveBeenCalledTimes(2);
+  });
+
+  it("still meters the free trial when an own-document audit comes from the cache", async () => {
+    generateContent.mockResolvedValueOnce(ok(modelAudit));
+    await analyze(post("/api/analyze", form([await ownFile("miller-home")])));
+    const cached = await analyze(post("/api/analyze", form([await ownFile("miller-home")])));
+
+    expect((await cached.json()).meta.cachedAt).toEqual(expect.any(String));
+    expect(cookiesFrom(cached)).toMatch(/^insuraus_trial=/);
   });
 
   it("surfaces Gemini's own reason for other errors and does not consume the trial", async () => {

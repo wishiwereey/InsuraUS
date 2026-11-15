@@ -1,13 +1,12 @@
 import { NextResponse } from "next/server";
+import { auditCacheKey, getCachedAudit, setCachedAudit } from "@/lib/audit/cache";
 import { normalizeAudit } from "@/lib/audit/normalize";
 import {
-  GEMINI_FALLBACK_MODEL,
-  GEMINI_MODEL,
   describeGeminiError,
   geminiErrorDetail,
   getGemini,
-  isApiError,
   isRequestShapeError,
+  withModelFallback,
 } from "@/lib/gemini/client";
 import { AUDITOR_SYSTEM_PROMPT, AUDIT_JSON_SHAPE, formatUserContext } from "@/lib/gemini/prompts";
 import { auditResponseSchema } from "@/lib/gemini/schema";
@@ -58,6 +57,32 @@ export async function POST(req: Request) {
     if (ownDocs > FREE_TRIAL.maxFiles) return paywall("file_limit");
   }
 
+  const respond = (audit: AuditResult, model: string, cachedAt?: number) => {
+    const res = NextResponse.json<AnalyzeResponse>({
+      audit,
+      meta: {
+        model,
+        fileNames: pdfs.map((p) => p.name),
+        durationMs: Date.now() - started,
+        demo,
+        ...(cachedAt ? { cachedAt: new Date(cachedAt).toISOString() } : {}),
+      },
+    });
+    // Only a successful audit of the user's own documents consumes the free trial.
+    if (!billing.pro && !demo) {
+      res.headers.append("Set-Cookie", trialCookie({ ...billing.trial, audits: billing.trial.audits + 1 }));
+    }
+    return res;
+  };
+
+  // Identical documents + context analysed recently → reuse that real result.
+  const cacheKey = auditCacheKey(
+    pdfs.map((p) => p.sha256),
+    context,
+  );
+  const cached = getCachedAudit(cacheKey);
+  if (cached) return respond(cached.audit, cached.model, cached.at);
+
   let ai;
   try {
     ai = getGemini();
@@ -74,13 +99,6 @@ export async function POST(req: Request) {
     { text: "Audit these policies now. Return only JSON that matches the schema." },
   ];
 
-  /**
-   * 1st try: strict responseSchema (structured output).
-   * If Gemini rejects the request shape (400 — e.g. schema too complex for the
-   * model/version), retry in JSON mode with the schema described in the prompt;
-   * normalizeAudit() still enforces types and recomputes all math.
-   * If the model id is unavailable (404), retry on the fallback model.
-   */
   const call = (model: string, strict: boolean) =>
     ai.models.generateContent({
       model,
@@ -95,26 +113,25 @@ export async function POST(req: Request) {
       },
     });
 
-  try {
-    let model = GEMINI_MODEL;
-    let response;
+  /**
+   * Per model: strict responseSchema first; if Gemini rejects the request shape
+   * (400 — e.g. schema too complex), retry in JSON mode with the schema in the
+   * prompt (normalizeAudit() still enforces types and recomputes the math).
+   * Across models: withModelFallback() retries overloads and moves to the next
+   * model on quota (429) or unavailability (404).
+   */
+  const strictThenJson = async (model: string) => {
     try {
-      response = await call(model, true);
+      return await call(model, true);
     } catch (err) {
-      if (isApiError(err) && err.status === 404) {
-        console.warn(`[analyze] ${model} unavailable, falling back to ${GEMINI_FALLBACK_MODEL}`);
-        model = GEMINI_FALLBACK_MODEL;
-        response = await call(model, true).catch((e) => {
-          if (isRequestShapeError(e)) return call(model, false);
-          throw e;
-        });
-      } else if (isRequestShapeError(err)) {
-        console.warn("[analyze] strict schema rejected, retrying in JSON mode:", geminiErrorDetail(err));
-        response = await call(model, false);
-      } else {
-        throw err;
-      }
+      if (!isRequestShapeError(err)) throw err;
+      console.warn(`[analyze] ${model}: strict schema rejected, retrying in JSON mode:`, geminiErrorDetail(err));
+      return call(model, false);
     }
+  };
+
+  try {
+    const { result: response, model } = await withModelFallback(strictThenJson);
 
     const raw = response.text;
     if (!raw) return fail(502, "Gemini returned an empty response. Please try again.", "INVALID_AI_OUTPUT");
@@ -135,15 +152,8 @@ export async function POST(req: Request) {
       );
     }
 
-    const res = NextResponse.json<AnalyzeResponse>({
-      audit,
-      meta: { model, fileNames: pdfs.map((p) => p.name), durationMs: Date.now() - started, demo },
-    });
-    // Only a successful audit of the user's own documents consumes the free trial.
-    if (!billing.pro && !demo) {
-      res.headers.append("Set-Cookie", trialCookie({ ...billing.trial, audits: billing.trial.audits + 1 }));
-    }
-    return res;
+    setCachedAudit(cacheKey, { audit, model, at: Date.now() });
+    return respond(audit, model);
   } catch (err) {
     console.error("[analyze] Gemini error:", geminiErrorDetail(err));
     const { status, message } = describeGeminiError(err);

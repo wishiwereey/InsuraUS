@@ -1,8 +1,8 @@
 # Test results
 
-Generated 2026-11-15 04:14 UTC with `npm run test:report` (Vitest, Node v22.23.4).
+Generated 2026-11-15 06:46 UTC with `npm run test:report` (Vitest, Node v22.23.4).
 
-**73 / 73 tests passed** across 25 suites.
+**79 / 79 tests passed** across 25 suites.
 
 No Gemini API key is needed: the SDK is replaced by a fake client in `tests/gemini.test.ts`, and the other route tests stop at the billing/validation gate before any AI call.
 
@@ -10,13 +10,13 @@ No Gemini API key is needed: the SDK is replaced by a fake client in `tests/gemi
 
 | | Statements | Branches | Functions | Lines |
 |---|---|---|---|---|
-| **Total** | 94.3% | 82.6% | 96.4% | 95.1% |
-| `app/api/analyze/route.ts` | 90.9% | 82.3% | 87.5% | 93.3% |
+| **Total** | 94.6% | 83.5% | 98.0% | 95.3% |
+| `app/api/analyze/route.ts` | 95.6% | 87.5% | 100.0% | 96.7% |
 | `app/api/billing/cancel/route.ts` | 100.0% | 100.0% | 100.0% | 100.0% |
 | `app/api/billing/checkout/route.ts` | 95.2% | 94.4% | 100.0% | 94.4% |
 | `app/api/billing/reset/route.ts` | 100.0% | 100.0% | 100.0% | 100.0% |
 | `app/api/billing/status/route.ts` | 100.0% | 100.0% | 100.0% | 100.0% |
-| `app/api/chat/route.ts` | 73.1% | 54.5% | 91.7% | 76.7% |
+| `app/api/chat/route.ts` | 76.6% | 62.1% | 100.0% | 79.3% |
 | `app/api/samples/[id]/route.ts` | 100.0% | 100.0% | 100.0% | 100.0% |
 | `lib/finance.ts` | 100.0% | 100.0% | 100.0% | 100.0% |
 | `lib/presets.ts` | 100.0% | 100.0% | 100.0% | 100.0% |
@@ -27,11 +27,12 @@ No Gemini API key is needed: the SDK is replaced by a fake client in `tests/gemi
 | `lib/samples-meta.ts` | 100.0% | 100.0% | 100.0% | 100.0% |
 | `lib/stats.ts` | 0.0% | 100.0% | 100.0% | 0.0% |
 | `lib/utils.ts` | 83.3% | 60.0% | 66.7% | 77.8% |
+| `lib/audit/cache.ts` | 70.6% | 60.0% | 100.0% | 73.3% |
 | `lib/audit/normalize.ts` | 100.0% | 77.5% | 100.0% | 100.0% |
 | `lib/billing/plans.ts` | 100.0% | 100.0% | 100.0% | 100.0% |
 | `lib/billing/samples.ts` | 100.0% | 100.0% | 100.0% | 100.0% |
 | `lib/billing/server.ts` | 91.3% | 85.7% | 100.0% | 91.7% |
-| `lib/gemini/client.ts` | 90.2% | 82.8% | 100.0% | 90.9% |
+| `lib/gemini/client.ts` | 92.3% | 83.3% | 100.0% | 94.2% |
 | `lib/pdf/dec-page-builder.ts` | 98.3% | 95.3% | 97.3% | 98.1% |
 
 ## What is tested
@@ -68,12 +69,18 @@ No Gemini API key is needed: the SDK is replaced by a fake client in `tests/gemi
 - ✅ toStatus › reports remaining trial allowance and never goes negative
 - ✅ toStatus › reports Pro when subscribed
 
-### `tests/gemini.test.ts` — 10/10 passed
+### `tests/gemini.test.ts` — 16/16 passed
 
 - ✅ POST /api/analyze with Gemini › returns a normalized audit and consumes the free trial for own documents
 - ✅ POST /api/analyze with Gemini › does not consume the trial for sample documents
 - ✅ POST /api/analyze with Gemini › retries in JSON mode when Gemini rejects the response schema (400)
 - ✅ POST /api/analyze with Gemini › falls back to another model when the configured one is unavailable (404)
+- ✅ POST /api/analyze with Gemini › switches to Flash-Lite (separate quota) when the main model is rate-limited (429)
+- ✅ POST /api/analyze with Gemini › retries the same model once when Gemini is overloaded (503)
+- ✅ POST /api/analyze with Gemini › returns a friendly 429 only when every model is rate-limited
+- ✅ POST /api/analyze with Gemini › serves identical documents from the cache without calling Gemini again
+- ✅ POST /api/analyze with Gemini › does not reuse a cached audit when the household context differs
+- ✅ POST /api/analyze with Gemini › still meters the free trial when an own-document audit comes from the cache
 - ✅ POST /api/analyze with Gemini › surfaces Gemini's own reason for other errors and does not consume the trial
 - ✅ POST /api/analyze with Gemini › returns 502 for malformed JSON and 422 when no policy is found
 - ✅ POST /api/chat with Gemini › streams the answer and meters questions on own documents

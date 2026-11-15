@@ -2,8 +2,12 @@ import "server-only";
 import { ApiError as GenAIApiError, GoogleGenAI } from "@google/genai";
 
 export const GEMINI_MODEL = process.env.GEMINI_MODEL || "gemini-2.5-flash";
-/** Used automatically if the primary model is unavailable (404) for this key/region. */
-export const GEMINI_FALLBACK_MODEL = "gemini-flash-latest";
+/**
+ * Tried in order when the primary model is rate-limited (429), overloaded (5xx)
+ * or unavailable (404). Flash-Lite has its own quota, so it absorbs bursts —
+ * e.g. a whole jury opening the demo at once on a free-tier key.
+ */
+export const GEMINI_FALLBACK_MODELS = ["gemini-2.5-flash-lite", "gemini-flash-latest"];
 
 let client: GoogleGenAI | null = null;
 
@@ -51,13 +55,52 @@ export function isRequestShapeError(err: unknown): boolean {
   return !d.includes("api key") && !d.includes("location") && !d.includes("billing");
 }
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+/** Pause before retrying an overloaded model. Overridable for tests. */
+const retryDelayMs = () => Number(process.env.GEMINI_RETRY_DELAY_MS ?? 2000);
+
+/**
+ * Run a Gemini call with resilience:
+ * - 5xx (overloaded): retry the same model once after a short pause;
+ * - 429 (quota) or 404 (model unavailable), or 5xx again: move to the next model;
+ * - anything else (bad key, region, malformed request): fail immediately.
+ * Returns the result and the model that produced it.
+ */
+export async function withModelFallback<T>(run: (model: string) => Promise<T>): Promise<{ result: T; model: string }> {
+  const models = [GEMINI_MODEL, ...GEMINI_FALLBACK_MODELS.filter((m) => m !== GEMINI_MODEL)];
+  let lastError: unknown;
+  for (const model of models) {
+    for (let attempt = 0; attempt < 2; attempt++) {
+      try {
+        return { result: await run(model), model };
+      } catch (err) {
+        lastError = err;
+        if (!isApiError(err)) throw err;
+        if (err.status >= 500 && attempt === 0) {
+          console.warn(`[gemini] ${model} returned ${err.status}, retrying once`);
+          await sleep(retryDelayMs());
+          continue;
+        }
+        if (err.status === 429 || err.status === 404 || err.status >= 500) {
+          console.warn(`[gemini] ${model} returned ${err.status}, trying the next model`);
+          break;
+        }
+        throw err;
+      }
+    }
+  }
+  throw lastError;
+}
+
 /** Turn SDK / network errors into a message that is safe and useful to show users. */
 export function describeGeminiError(err: unknown): { status: number; message: string } {
   if (err instanceof MissingApiKeyError) return { status: 500, message: err.message };
   if (isApiError(err)) {
     const detail = geminiErrorDetail(err).slice(0, 300);
     const d = detail.toLowerCase();
-    if (err.status === 429) return { status: 429, message: "Gemini rate limit reached. Wait ~30 seconds and try again." };
+    if (err.status === 429)
+      return { status: 429, message: "Our AI is busy right now (many audits at once). Please try again in about 30 seconds." };
     if (d.includes("api key") || err.status === 401)
       return { status: 500, message: "Your Gemini API key was rejected. Check GEMINI_API_KEY in .env.local (no quotes or spaces) and restart the server." };
     if (d.includes("location is not supported"))

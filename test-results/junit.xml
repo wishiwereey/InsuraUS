@@ -1,173 +1,203 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuites name="vitest tests" tests="73" failures="0" errors="0" time="1.265884929">
-    <testsuite name="tests/api.test.ts" timestamp="2026-11-15T04:14:42.557Z" hostname="vm" tests="17" failures="0" errors="0" skipped="0" time="0.380075302">
-        <testcase classname="tests/api.test.ts" name="POST /api/analyze — free trial gate &gt; lets a free user audit up to 2 of their own PDFs" time="0.353458863">
+<testsuites name="vitest tests" tests="79" failures="0" errors="0" time="1.382386955">
+    <testsuite name="tests/api.test.ts" timestamp="2026-11-15T06:46:23.147Z" hostname="vm" tests="17" failures="0" errors="0" skipped="0" time="0.391234018">
+        <testcase classname="tests/api.test.ts" name="POST /api/analyze — free trial gate &gt; lets a free user audit up to 2 of their own PDFs" time="0.359273357">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="POST /api/analyze — free trial gate &gt; returns 402 file_limit for 3 own PDFs on the free trial" time="0.00344746">
+        <testcase classname="tests/api.test.ts" name="POST /api/analyze — free trial gate &gt; returns 402 file_limit for 3 own PDFs on the free trial" time="0.003527422">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="POST /api/analyze — free trial gate &gt; returns 402 trial_used once the free audit is spent" time="0.001839624">
+        <testcase classname="tests/api.test.ts" name="POST /api/analyze — free trial gate &gt; returns 402 trial_used once the free audit is spent" time="0.001912724">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="POST /api/analyze — free trial gate &gt; keeps sample households free — even 3 files with a used-up trial" time="0.00181449">
+        <testcase classname="tests/api.test.ts" name="POST /api/analyze — free trial gate &gt; keeps sample households free — even 3 files with a used-up trial" time="0.002089144">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="POST /api/analyze — free trial gate &gt; lets Pro users audit 3+ own PDFs after the trial is used" time="0.00327598">
+        <testcase classname="tests/api.test.ts" name="POST /api/analyze — free trial gate &gt; lets Pro users audit 3+ own PDFs after the trial is used" time="0.008683829">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="POST /api/analyze — free trial gate &gt; rejects a fake PDF with 400 before touching billing or Gemini" time="0.001152954">
+        <testcase classname="tests/api.test.ts" name="POST /api/analyze — free trial gate &gt; rejects a fake PDF with 400 before touching billing or Gemini" time="0.001262864">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="POST /api/chat — Copilot question limit &gt; returns 402 chat_limit after the free questions on own documents" time="0.001802808">
+        <testcase classname="tests/api.test.ts" name="POST /api/chat — Copilot question limit &gt; returns 402 chat_limit after the free questions on own documents" time="0.001930668">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="POST /api/chat — Copilot question limit &gt; never meters questions about sample documents" time="0.001473833">
+        <testcase classname="tests/api.test.ts" name="POST /api/chat — Copilot question limit &gt; never meters questions about sample documents" time="0.001461677">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="POST /api/chat — Copilot question limit &gt; requires the last message to be from the user" time="0.000861993">
+        <testcase classname="tests/api.test.ts" name="POST /api/chat — Copilot question limit &gt; requires the last message to be from the user" time="0.000764308">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="billing endpoints &gt; checkout → status → cancel lifecycle" time="0.002102334">
+        <testcase classname="tests/api.test.ts" name="billing endpoints &gt; checkout → status → cancel lifecycle" time="0.002134512">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="billing endpoints &gt; yearly checkout renews in a year at the server-side annual price" time="0.00088055">
+        <testcase classname="tests/api.test.ts" name="billing endpoints &gt; yearly checkout renews in a year at the server-side annual price" time="0.000865784">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="billing endpoints &gt; monthly is the default interval and renews in about a month" time="0.000735764">
+        <testcase classname="tests/api.test.ts" name="billing endpoints &gt; monthly is the default interval and renews in about a month" time="0.000735785">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="billing endpoints &gt; rejects an unknown billing interval" time="0.00044488">
+        <testcase classname="tests/api.test.ts" name="billing endpoints &gt; rejects an unknown billing interval" time="0.000490114">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="billing endpoints &gt; rejects checkout without valid test-card details" time="0.000643914">
+        <testcase classname="tests/api.test.ts" name="billing endpoints &gt; rejects checkout without valid test-card details" time="0.000507328">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="billing endpoints &gt; reset restores a fresh trial" time="0.001310299">
+        <testcase classname="tests/api.test.ts" name="billing endpoints &gt; reset restores a fresh trial" time="0.001334455">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="GET /api/samples/:id &gt; serves a generated PDF inline or as a download" time="0.001327249">
+        <testcase classname="tests/api.test.ts" name="GET /api/samples/:id &gt; serves a generated PDF inline or as a download" time="0.001413087">
         </testcase>
-        <testcase classname="tests/api.test.ts" name="GET /api/samples/:id &gt; 404s for unknown ids" time="0.000547331">
-        </testcase>
-    </testsuite>
-    <testsuite name="tests/billing.test.ts" timestamp="2026-11-15T04:14:42.565Z" hostname="vm" tests="9" failures="0" errors="0" skipped="0" time="0.034843406">
-        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; round-trips trial usage" time="0.02871959">
-        </testcase>
-        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; round-trips a Pro subscription" time="0.000892524">
-        </testcase>
-        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; rejects a tampered payload (client can&apos;t grant itself Pro)" time="0.000412218">
-        </testcase>
-        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; rejects a cookie signed with a different secret" time="0.000537106">
-        </testcase>
-        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; ignores garbage and missing cookies" time="0.000328008">
-        </testcase>
-        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; treats an expired subscription as free" time="0.000267755">
-        </testcase>
-        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; sets httpOnly, SameSite=Lax cookies and clears with Max-Age=0" time="0.000314882">
-        </testcase>
-        <testcase classname="tests/billing.test.ts" name="toStatus &gt; reports remaining trial allowance and never goes negative" time="0.000813584">
-        </testcase>
-        <testcase classname="tests/billing.test.ts" name="toStatus &gt; reports Pro when subscribed" time="0.000304353">
+        <testcase classname="tests/api.test.ts" name="GET /api/samples/:id &gt; 404s for unknown ids" time="0.000326909">
         </testcase>
     </testsuite>
-    <testsuite name="tests/gemini.test.ts" timestamp="2026-11-15T04:14:42.567Z" hostname="vm" tests="10" failures="0" errors="0" skipped="0" time="0.376263382">
-        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; returns a normalized audit and consumes the free trial for own documents" time="0.355011441">
+    <testsuite name="tests/billing.test.ts" timestamp="2026-11-15T06:46:23.152Z" hostname="vm" tests="9" failures="0" errors="0" skipped="0" time="0.036447016">
+        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; round-trips trial usage" time="0.029247744">
         </testcase>
-        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; does not consume the trial for sample documents" time="0.002916289">
+        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; round-trips a Pro subscription" time="0.000852118">
         </testcase>
-        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; retries in JSON mode when Gemini rejects the response schema (400)" time="0.00382264">
+        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; rejects a tampered payload (client can&apos;t grant itself Pro)" time="0.000431295">
+        </testcase>
+        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; rejects a cookie signed with a different secret" time="0.00050501">
+        </testcase>
+        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; ignores garbage and missing cookies" time="0.000428953">
+        </testcase>
+        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; treats an expired subscription as free" time="0.000320058">
+        </testcase>
+        <testcase classname="tests/billing.test.ts" name="signed billing cookies &gt; sets httpOnly, SameSite=Lax cookies and clears with Max-Age=0" time="0.000264129">
+        </testcase>
+        <testcase classname="tests/billing.test.ts" name="toStatus &gt; reports remaining trial allowance and never goes negative" time="0.001875366">
+        </testcase>
+        <testcase classname="tests/billing.test.ts" name="toStatus &gt; reports Pro when subscribed" time="0.000511828">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/gemini.test.ts" timestamp="2026-11-15T06:46:23.154Z" hostname="vm" tests="16" failures="0" errors="0" skipped="0" time="0.416770721">
+        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; returns a normalized audit and consumes the free trial for own documents" time="0.377381069">
+        </testcase>
+        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; does not consume the trial for sample documents" time="0.00357246">
+        </testcase>
+        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; retries in JSON mode when Gemini rejects the response schema (400)" time="0.003597941">
             <system-err>
-[analyze] strict schema rejected, retrying in JSON mode: The specified schema produces a constraint that has too many states
+[analyze] gemini-2.5-flash: strict schema rejected, retrying in JSON mode: The specified schema produces a constraint that has too many states
 
             </system-err>
         </testcase>
-        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; falls back to another model when the configured one is unavailable (404)" time="0.002618788">
+        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; falls back to another model when the configured one is unavailable (404)" time="0.001643223">
             <system-err>
-[analyze] gemini-2.5-flash unavailable, falling back to gemini-flash-latest
+[gemini] gemini-2.5-flash returned 404, trying the next model
 
             </system-err>
         </testcase>
-        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; surfaces Gemini&apos;s own reason for other errors and does not consume the trial" time="0.002628273">
+        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; switches to Flash-Lite (separate quota) when the main model is rate-limited (429)" time="0.003012423">
+            <system-err>
+[gemini] gemini-2.5-flash returned 429, trying the next model
+
+            </system-err>
+        </testcase>
+        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; retries the same model once when Gemini is overloaded (503)" time="0.002268579">
+            <system-err>
+[gemini] gemini-2.5-flash returned 503, retrying once
+
+            </system-err>
+        </testcase>
+        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; returns a friendly 429 only when every model is rate-limited" time="0.003308803">
+            <system-err>
+[gemini] gemini-2.5-flash returned 429, trying the next model
+
+[gemini] gemini-2.5-flash-lite returned 429, trying the next model
+
+[gemini] gemini-flash-latest returned 429, trying the next model
+
+[analyze] Gemini error: Resource has been exhausted
+
+            </system-err>
+        </testcase>
+        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; serves identical documents from the cache without calling Gemini again" time="0.00300875">
+        </testcase>
+        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; does not reuse a cached audit when the household context differs" time="0.002866904">
+        </testcase>
+        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; still meters the free trial when an own-document audit comes from the cache" time="0.002434039">
+        </testcase>
+        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; surfaces Gemini&apos;s own reason for other errors and does not consume the trial" time="0.00216845">
             <system-err>
 [analyze] Gemini error: API key not valid. Please pass a valid API key.
 
             </system-err>
         </testcase>
-        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; returns 502 for malformed JSON and 422 when no policy is found" time="0.002612502">
+        <testcase classname="tests/gemini.test.ts" name="POST /api/analyze with Gemini &gt; returns 502 for malformed JSON and 422 when no policy is found" time="0.005173198">
         </testcase>
-        <testcase classname="tests/gemini.test.ts" name="POST /api/chat with Gemini &gt; streams the answer and meters questions on own documents" time="0.003534771">
+        <testcase classname="tests/gemini.test.ts" name="POST /api/chat with Gemini &gt; streams the answer and meters questions on own documents" time="0.002842891">
         </testcase>
-        <testcase classname="tests/gemini.test.ts" name="Gemini error helpers &gt; extracts the human-readable message from Google&apos;s JSON error body" time="0.000192637">
+        <testcase classname="tests/gemini.test.ts" name="Gemini error helpers &gt; extracts the human-readable message from Google&apos;s JSON error body" time="0.000247556">
         </testcase>
-        <testcase classname="tests/gemini.test.ts" name="Gemini error helpers &gt; classifies only request-shape 400s as retryable" time="0.000377288">
+        <testcase classname="tests/gemini.test.ts" name="Gemini error helpers &gt; classifies only request-shape 400s as retryable" time="0.000192211">
         </testcase>
-        <testcase classname="tests/gemini.test.ts" name="Gemini error helpers &gt; maps errors to safe, actionable messages" time="0.000230527">
-        </testcase>
-    </testsuite>
-    <testsuite name="tests/lib.test.ts" timestamp="2026-11-15T04:14:42.570Z" hostname="vm" tests="15" failures="0" errors="0" skipped="0" time="0.347444544">
-        <testcase classname="tests/lib.test.ts" name="finance — 5-year wealth impact &gt; matches the ordinary-annuity future value at 7%" time="0.002305224">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="finance — 5-year wealth impact &gt; is zero for no or negative savings" time="0.000332371">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="finance — 5-year wealth impact &gt; produces a monotonically growing series ending at the FV" time="0.001112089">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="pricing &gt; yearly Pro is $89.99 — about $7.50/mo and 37% less than paying monthly" time="0.000285078">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="pricing &gt; formats whole and fractional prices" time="0.000123914">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="formatting helpers &gt; formats whole dollars" time="0.002456365">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="formatting helpers &gt; trims the trailing amount from scenario titles" time="0.000367415">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; miller-auto is a valid multi-section PDF" time="0.190930374">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; miller-health is a valid multi-section PDF" time="0.045077952">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; miller-home is a valid multi-section PDF" time="0.03838032">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; rivera-auto is a valid multi-section PDF" time="0.035453748">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; rivera-renters is a valid multi-section PDF" time="0.013421635">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; rivera-health is a valid multi-section PDF" time="0.013037527">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; is deterministic, so demo documents can be recognized by hash" time="0.000867031">
-        </testcase>
-        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; presets add up to the advertised household spend" time="0.00023746">
+        <testcase classname="tests/gemini.test.ts" name="Gemini error helpers &gt; maps errors to safe, actionable messages" time="0.000282618">
         </testcase>
     </testsuite>
-    <testsuite name="tests/normalize.test.ts" timestamp="2026-11-15T04:14:42.574Z" hostname="vm" tests="14" failures="0" errors="0" skipped="0" time="0.010351454">
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — totals are recomputed, never trusted from the model &gt; sums current premiums and gross savings across policies" time="0.002740306">
+    <testsuite name="tests/lib.test.ts" timestamp="2026-11-15T06:46:23.158Z" hostname="vm" tests="15" failures="0" errors="0" skipped="0" time="0.41093728">
+        <testcase classname="tests/lib.test.ts" name="finance — 5-year wealth impact &gt; matches the ordinary-annuity future value at 7%" time="0.00197328">
         </testcase>
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — totals are recomputed, never trusted from the model &gt; reports protection upgrades separately instead of netting them out of savings (regression)" time="0.000379659">
+        <testcase classname="tests/lib.test.ts" name="finance — 5-year wealth impact &gt; is zero for no or negative savings" time="0.000388786">
         </testcase>
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — totals are recomputed, never trusted from the model &gt; parses money strings and rounds to whole dollars" time="0.000349742">
+        <testcase classname="tests/lib.test.ts" name="finance — 5-year wealth impact &gt; produces a monotonically growing series ending at the FV" time="0.001021874">
         </testcase>
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — totals are recomputed, never trusted from the model &gt; never produces a negative optimized premium" time="0.00017173">
+        <testcase classname="tests/lib.test.ts" name="pricing &gt; yearly Pro is $89.99 — about $7.50/mo and 37% less than paying monthly" time="0.000218558">
         </testcase>
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — policy status is derived deterministically &gt; is &apos;overpaying&apos; when savings are at least 10% of the premium" time="0.000290655">
+        <testcase classname="tests/lib.test.ts" name="pricing &gt; formats whole and fractional prices" time="0.000205891">
         </testcase>
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — policy status is derived deterministically &gt; is &apos;suboptimal&apos; for small savings or any coverage gap" time="0.000223128">
+        <testcase classname="tests/lib.test.ts" name="formatting helpers &gt; formats whole dollars" time="0.002442475">
         </testcase>
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — policy status is derived deterministically &gt; is &apos;optimized&apos; with no issues, and never &apos;overpaying&apos; without evidence" time="0.000246463">
+        <testcase classname="tests/lib.test.ts" name="formatting helpers &gt; trims the trailing amount from scenario titles" time="0.000319406">
         </testcase>
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — policy status is derived deterministically &gt; sorts issues by severity, then by savings" time="0.001444636">
+        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; miller-auto is a valid multi-section PDF" time="0.179489114">
         </testcase>
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — what-if scenarios &gt; uses portfolio premiums from the policies and computes 1-year net cost" time="0.000405812">
+        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; miller-health is a valid multi-section PDF" time="0.087697926">
         </testcase>
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — what-if scenarios &gt; caps out-of-pocket at the event cost and floors it at zero" time="0.000187436">
+        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; miller-home is a valid multi-section PDF" time="0.056911165">
         </testcase>
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — what-if scenarios &gt; keeps at most 3 scenarios" time="0.001015227">
+        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; rivera-auto is a valid multi-section PDF" time="0.039035272">
         </testcase>
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — score and verdict &gt; clamps the health score to 0–100" time="0.000224586">
+        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; rivera-renters is a valid multi-section PDF" time="0.016835763">
         </testcase>
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — score and verdict &gt; falls back to the average of factor scores when the model omits the score" time="0.000257089">
+        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; rivera-health is a valid multi-section PDF" time="0.018416348">
         </testcase>
-        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — score and verdict &gt; keeps the verdict to one sentence and strips cents" time="0.000124447">
+        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; is deterministic, so demo documents can be recognized by hash" time="0.001114784">
+        </testcase>
+        <testcase classname="tests/lib.test.ts" name="sample PDF generator &gt; presets add up to the advertised household spend" time="0.000383789">
         </testcase>
     </testsuite>
-    <testsuite name="tests/request.test.ts" timestamp="2026-11-15T04:14:42.576Z" hostname="vm" tests="8" failures="0" errors="0" skipped="0" time="0.116906841">
-        <testcase classname="tests/request.test.ts" name="parseUserContext — whitelists household context &gt; keeps valid fields" time="0.002642889">
+    <testsuite name="tests/normalize.test.ts" timestamp="2026-11-15T06:46:23.161Z" hostname="vm" tests="14" failures="0" errors="0" skipped="0" time="0.009121881">
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — totals are recomputed, never trusted from the model &gt; sums current premiums and gross savings across policies" time="0.002551363">
         </testcase>
-        <testcase classname="tests/request.test.ts" name="parseUserContext — whitelists household context &gt; drops unknown states, out-of-range numbers and unexpected keys" time="0.000244666">
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — totals are recomputed, never trusted from the model &gt; reports protection upgrades separately instead of netting them out of savings (regression)" time="0.000324866">
         </testcase>
-        <testcase classname="tests/request.test.ts" name="parseUserContext — whitelists household context &gt; survives malformed or missing input" time="0.00023651">
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — totals are recomputed, never trusted from the model &gt; parses money strings and rounds to whole dollars" time="0.000204264">
         </testcase>
-        <testcase classname="tests/request.test.ts" name="readPdfUploads — validates uploads &gt; accepts real PDFs and returns base64 + sha256" time="0.096907602">
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — totals are recomputed, never trusted from the model &gt; never produces a negative optimized premium" time="0.000131661">
         </testcase>
-        <testcase classname="tests/request.test.ts" name="readPdfUploads — validates uploads &gt; rejects a non-PDF even with a .pdf name and PDF MIME type (magic-byte check)" time="0.001549937">
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — policy status is derived deterministically &gt; is &apos;overpaying&apos; when savings are at least 10% of the premium" time="0.000265897">
         </testcase>
-        <testcase classname="tests/request.test.ts" name="readPdfUploads — validates uploads &gt; requires at least one file" time="0.00028771">
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — policy status is derived deterministically &gt; is &apos;suboptimal&apos; for small savings or any coverage gap" time="0.00018017">
         </testcase>
-        <testcase classname="tests/request.test.ts" name="readPdfUploads — validates uploads &gt; rejects more than 6 files" time="0.000304202">
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — policy status is derived deterministically &gt; is &apos;optimized&apos; with no issues, and never &apos;overpaying&apos; without evidence" time="0.000143359">
         </testcase>
-        <testcase classname="tests/request.test.ts" name="readPdfUploads — validates uploads &gt; rejects files over 10 MB with FILE_TOO_LARGE" time="0.011915117">
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — policy status is derived deterministically &gt; sorts issues by severity, then by savings" time="0.000801601">
+        </testcase>
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — what-if scenarios &gt; uses portfolio premiums from the policies and computes 1-year net cost" time="0.000374777">
+        </testcase>
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — what-if scenarios &gt; caps out-of-pocket at the event cost and floors it at zero" time="0.00022571">
+        </testcase>
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — what-if scenarios &gt; keeps at most 3 scenarios" time="0.001193722">
+        </testcase>
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — score and verdict &gt; clamps the health score to 0–100" time="0.000201015">
+        </testcase>
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — score and verdict &gt; falls back to the average of factor scores when the model omits the score" time="0.0001627">
+        </testcase>
+        <testcase classname="tests/normalize.test.ts" name="normalizeAudit — score and verdict &gt; keeps the verdict to one sentence and strips cents" time="0.000169361">
+        </testcase>
+    </testsuite>
+    <testsuite name="tests/request.test.ts" timestamp="2026-11-15T06:46:23.163Z" hostname="vm" tests="8" failures="0" errors="0" skipped="0" time="0.117876039">
+        <testcase classname="tests/request.test.ts" name="parseUserContext — whitelists household context &gt; keeps valid fields" time="0.002737864">
+        </testcase>
+        <testcase classname="tests/request.test.ts" name="parseUserContext — whitelists household context &gt; drops unknown states, out-of-range numbers and unexpected keys" time="0.000266584">
+        </testcase>
+        <testcase classname="tests/request.test.ts" name="parseUserContext — whitelists household context &gt; survives malformed or missing input" time="0.000249202">
+        </testcase>
+        <testcase classname="tests/request.test.ts" name="readPdfUploads — validates uploads &gt; accepts real PDFs and returns base64 + sha256" time="0.096690212">
+        </testcase>
+        <testcase classname="tests/request.test.ts" name="readPdfUploads — validates uploads &gt; rejects a non-PDF even with a .pdf name and PDF MIME type (magic-byte check)" time="0.001787108">
+        </testcase>
+        <testcase classname="tests/request.test.ts" name="readPdfUploads — validates uploads &gt; requires at least one file" time="0.000349712">
+        </testcase>
+        <testcase classname="tests/request.test.ts" name="readPdfUploads — validates uploads &gt; rejects more than 6 files" time="0.000383458">
+        </testcase>
+        <testcase classname="tests/request.test.ts" name="readPdfUploads — validates uploads &gt; rejects files over 10 MB with FILE_TOO_LARGE" time="0.013257088">
         </testcase>
     </testsuite>
 </testsuites>

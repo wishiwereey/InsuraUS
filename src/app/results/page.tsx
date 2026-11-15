@@ -123,8 +123,10 @@ export default function OverviewPage() {
           </li>
         </ul>
         <p className="money mt-4 text-sm text-muted">
-          Analyzed with {result.meta.model} in {(result.meta.durationMs / 1000).toFixed(1)}s. Your PDFs were processed in memory
-          and not stored.
+          {result.meta.cachedAt
+            ? `Instant result: a live ${result.meta.model} analysis of these exact documents from ${Math.max(1, Math.round((Date.now() - new Date(result.meta.cachedAt).getTime()) / 60000))} min ago.`
+            : `Analyzed with ${result.meta.model} in ${(result.meta.durationMs / 1000).toFixed(1)}s.`}{" "}
+          Your PDFs were processed in memory and not stored.
         </p>
       </section>
     </div>

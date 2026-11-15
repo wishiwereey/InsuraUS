@@ -144,6 +144,8 @@ export interface AnalyzeResponse {
     durationMs: number;
     /** True when every document was a built-in sample (free, never counts against the trial). */
     demo: boolean;
+    /** Set when this result is a recent real analysis of identical documents, reused from the cache (ISO time it ran). */
+    cachedAt?: string;
   };
 }
 
