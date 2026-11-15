@@ -63,7 +63,11 @@ export function AnalysisProgress({ fileNames, context }: AnalysisProgressProps) 
               <ShieldCheck className="size-4 text-savings" /> Auditing your coverage
             </p>
             <p className="mt-1 text-sm text-muted">
-              Gemini is reading every line of your policies. This usually takes 20–40 seconds.
+              Gemini is reading every line of your policies. This usually takes 20–60 seconds.
+            </p>
+            <p className="mt-2 text-xs text-muted">
+              Heads-up: this hackathon demo runs on a free Gemini API key, so it can be slow and may ask you to retry in
+              about 30 seconds when many people use it at once.
             </p>
           </div>
           <span className="money rounded-full bg-canvas px-2.5 py-1 text-xs font-semibold text-ink-soft">{elapsed}s</span>
