@@ -2,7 +2,6 @@
 
 import { ArrowRight, Check, Crown, Gift, Minus } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { useBilling } from "@/components/providers/BillingProvider";
 import {
   ANNUAL_SAVINGS_PCT,
@@ -13,7 +12,6 @@ import {
   formatPrice,
   type BillingInterval,
 } from "@/lib/billing/plans";
-import { cn } from "@/lib/utils";
 
 const ROWS: [string, string, string][] = [
   ["Audits of your own policies", `${FREE_TRIAL.audits} free audit`, "Unlimited"],
@@ -43,10 +41,16 @@ const FAQ = [
   ],
 ];
 
+const PRO_BULLETS = [
+  "Unlimited audits",
+  `Up to ${PRO_LIMITS.maxFiles} PDFs per audit`,
+  "Unlimited Copilot questions",
+  "Cancel anytime",
+];
+
 export default function PricingPage() {
   const { status, isPro } = useBilling();
-  const [interval, setBillingInterval] = useState<BillingInterval>("year");
-  const price = PRICES[interval];
+  const ctaFor = (interval: BillingInterval) => (isPro ? "/account" : `/checkout?interval=${interval}`);
 
   return (
     <div className="mx-auto max-w-6xl px-4 py-12 sm:px-6 sm:py-16">
@@ -56,34 +60,9 @@ export default function PricingPage() {
         <p className="mt-4 text-lg text-muted">
           One free audit shows exactly how much you could save. Upgrade when you want to audit everything.
         </p>
-        <div className="mt-8 inline-flex rounded-full border border-line bg-surface p-1 shadow-card" role="group" aria-label="Billing period">
-          {(["month", "year"] as const).map((id) => (
-            <button
-              key={id}
-              onClick={() => setBillingInterval(id)}
-              aria-pressed={interval === id}
-              className={cn(
-                "flex items-center gap-2 rounded-full px-5 py-2.5 text-base font-bold transition",
-                interval === id ? "bg-ink text-white" : "text-muted hover:text-ink",
-              )}
-            >
-              {PRICES[id].label}
-              {id === "year" && (
-                <span
-                  className={cn(
-                    "rounded-full px-2 py-0.5 text-xs font-bold",
-                    interval === id ? "bg-scan text-night" : "bg-savings-soft text-savings-strong",
-                  )}
-                >
-                  −{ANNUAL_SAVINGS_PCT}%
-                </span>
-              )}
-            </button>
-          ))}
-        </div>
       </div>
 
-      <div className="mt-12 grid gap-6 md:grid-cols-2">
+      <div className="mt-12 grid gap-6 lg:grid-cols-3">
         {/* Free */}
         <div className="flex flex-col rounded-3xl border border-line bg-surface p-8 shadow-card">
           <span className="inline-flex w-fit items-center gap-2 rounded-full bg-canvas px-3 py-1 text-sm font-bold text-ink-soft">
@@ -107,56 +86,62 @@ export default function PricingPage() {
           </Link>
         </div>
 
-        {/* Pro */}
-        <div className="relative flex flex-col overflow-hidden rounded-3xl bg-night p-8 text-white shadow-glow">
+        {/* Pro — monthly */}
+        <div className="flex flex-col rounded-3xl border border-line bg-surface p-8 shadow-card">
+          <span className="inline-flex w-fit items-center gap-2 rounded-full bg-info-soft px-3 py-1 text-sm font-bold whitespace-nowrap text-info">
+            <Crown className="size-4" /> Pro Monthly
+          </span>
+          <p className="mt-5">
+            <span className="money text-5xl font-extrabold text-ink">{formatPrice(PRICES.month.amount)}</span>
+            <span className="text-lg text-muted"> / month</span>
+          </p>
+          <p className="mt-2 text-base text-muted">Flexible. Try Pro for a month, cancel anytime.</p>
+          <ul className="mt-6 space-y-3 text-base text-ink-soft">
+            {PRO_BULLETS.map((b) => (
+              <li key={b} className="flex gap-2">
+                <Check className="mt-1 size-5 shrink-0 text-savings" /> {b}
+              </li>
+            ))}
+          </ul>
+          <Link
+            href={ctaFor("month")}
+            className="mt-auto inline-flex items-center justify-center gap-2 rounded-xl bg-ink px-6 py-3.5 text-base font-bold text-white transition hover:bg-ink-soft sm:mt-8"
+          >
+            {isPro ? "Manage subscription" : "Choose monthly"}
+          </Link>
+        </div>
+
+        {/* Pro — yearly (highlighted) */}
+        <div className="relative flex flex-col overflow-hidden rounded-3xl bg-night p-8 text-white shadow-glow ring-2 ring-scan">
           <div className="absolute -right-24 -top-24 size-72 rounded-full bg-savings/20 blur-3xl" />
           <div className="relative flex flex-1 flex-col">
-            <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-2 rounded-full bg-scan/15 px-3 py-1 text-sm font-bold text-scan">
-                <Crown className="size-4" /> Pro
+            <div className="flex items-center justify-between gap-2">
+              <span className="inline-flex items-center gap-2 rounded-full bg-scan/15 px-3 py-1 text-sm font-bold whitespace-nowrap text-scan">
+                <Crown className="size-4" /> Pro Yearly
               </span>
-              <span className="rounded-full bg-white/10 px-3 py-1 text-sm font-semibold text-slate-200">
-                {interval === "year" ? "Best value" : "Most flexible"}
-              </span>
+              <span className="rounded-full bg-scan px-3 py-1 text-sm font-bold whitespace-nowrap text-night">Best value</span>
             </div>
-            {interval === "year" ? (
-              <>
-                <p className="mt-5">
-                  <span className="money text-5xl font-extrabold">{formatPrice(price.perMonth)}</span>
-                  <span className="text-lg text-slate-400"> / month</span>
-                </p>
-                <p className="money mt-2 text-base text-slate-300">
-                  <span className="text-slate-500 line-through">{formatPrice(PRICES.month.amount * 12)}</span>{" "}
-                  <span className="font-bold text-white">{formatPrice(price.amount)} billed yearly</span> · you save{" "}
-                  {formatPrice(ANNUAL_SAVINGS_USD)}
-                </p>
-              </>
-            ) : (
-              <>
-                <p className="mt-5">
-                  <span className="money text-5xl font-extrabold">{formatPrice(price.amount)}</span>
-                  <span className="text-lg text-slate-400"> / month</span>
-                </p>
-                <button
-                  onClick={() => setBillingInterval("year")}
-                  className="money mt-2 text-left text-base font-semibold text-scan underline-offset-4 hover:underline"
-                >
-                  Or {formatPrice(PRICES.year.perMonth)}/mo billed yearly — save {ANNUAL_SAVINGS_PCT}%
-                </button>
-              </>
-            )}
-            <p className="mt-2 text-base text-slate-300">For households with several policies and yearly renewals.</p>
+            <p className="mt-5">
+              <span className="money text-5xl font-extrabold">{formatPrice(PRICES.year.perMonth)}</span>
+              <span className="text-lg text-slate-400"> / month</span>
+            </p>
+            <p className="money mt-2 text-base text-slate-300">
+              <span className="text-slate-500 line-through">{formatPrice(PRICES.month.amount * 12)}</span>{" "}
+              <span className="font-bold text-white">{formatPrice(PRICES.year.amount)} billed yearly</span>
+            </p>
+            <p className="money mt-1 text-base font-semibold text-scan">Save {ANNUAL_SAVINGS_PCT}% · {formatPrice(ANNUAL_SAVINGS_USD)} a year</p>
             <ul className="mt-6 space-y-3 text-base text-slate-200">
-              <li className="flex gap-2"><Check className="mt-1 size-5 shrink-0 text-scan" /> Unlimited audits</li>
-              <li className="flex gap-2"><Check className="mt-1 size-5 shrink-0 text-scan" /> Up to {PRO_LIMITS.maxFiles} PDFs per audit</li>
-              <li className="flex gap-2"><Check className="mt-1 size-5 shrink-0 text-scan" /> Unlimited Copilot questions</li>
-              <li className="flex gap-2"><Check className="mt-1 size-5 shrink-0 text-scan" /> Cancel anytime</li>
+              {[...PRO_BULLETS, "Covers every renewal and open enrollment this year"].map((b) => (
+                <li key={b} className="flex gap-2">
+                  <Check className="mt-1 size-5 shrink-0 text-scan" /> {b}
+                </li>
+              ))}
             </ul>
             <Link
-              href={isPro ? "/account" : `/checkout?interval=${interval}`}
+              href={ctaFor("year")}
               className="mt-auto inline-flex items-center justify-center gap-2 rounded-xl bg-scan px-6 py-3.5 text-base font-bold text-night transition hover:bg-white sm:mt-8"
             >
-              {isPro ? "Manage subscription" : "Upgrade to Pro"} <ArrowRight className="size-5" />
+              {isPro ? "Manage subscription" : "Choose yearly"} <ArrowRight className="size-5" />
             </Link>
           </div>
         </div>
